@@ -1,0 +1,352 @@
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="robots" content="noindex"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body><title>Non-Parallelism Explained</title>
+<meta name="description" content="Animated explanation of non-parallelism in the one-stage clotting factor assay, with the published graphs.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cabin:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Lato:ital,wght@0,400;0,700;1,400&display=swap">
+<style>
+/* Layout: a sheet of log-lin graph paper as the page's working surface; one live chart, then mechanism, evidence, sources */
+:root{
+  --ground:#F2F5F8; --sheet:#FFFFFF; --grid:#DDE6EF; --grid-strong:#B9C8D8; --ink:#13202E; --ink-2:#33404E; --muted:#5D6B7A;
+  --ref:#C3313C;        /* reference plasma line: red, as Practical Haemostasis plots it */
+  --pat:#1F5FA8;        /* patient plasma */
+  --gold:#C98A1E; --gold-soft:#FBF0DA; --ok:#2B6B4C; --ok-soft:#E2F1E8; --warn-soft:#FBE7E9; --navy-soft:#E7ECF6;
+  --slate:#1D2938;
+  --f-head:"Cabin","Gill Sans",system-ui,sans-serif; --f-body:"Lato",system-ui,-apple-system,"Segoe UI",sans-serif; --f-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --ground:#0D131A; --sheet:#141C26; --grid:#1F2B38; --grid-strong:#2F3F51; --ink:#E7EDF4; --ink-2:#C3CEDA; --muted:#8E9CAB;
+  --ref:#F06A73; --pat:#7EB3F2; --gold:#F0B54E; --gold-soft:#2B2210; --ok:#79CBA2; --ok-soft:#12291E; --warn-soft:#33161B; --navy-soft:#18213A; --slate:#0A1016; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --ground:#0D131A; --sheet:#141C26; --grid:#1F2B38; --grid-strong:#2F3F51; --ink:#E7EDF4; --ink-2:#C3CEDA; --muted:#8E9CAB;
+  --ref:#F06A73; --pat:#7EB3F2; --gold:#F0B54E; --gold-soft:#2B2210; --ok:#79CBA2; --ok-soft:#12291E; --warn-soft:#33161B; --navy-soft:#18213A; --slate:#0A1016; color-scheme:dark}
+*{box-sizing:border-box}
+html{font-size:17px}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--f-body);line-height:1.65;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1120px;margin:0 auto;padding-inline:20px;padding-block:28px 64px}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px;border-radius:6px}
+a{color:var(--pat)}
+.eyebrow{font:700 .74rem var(--f-head);letter-spacing:.18em;text-transform:uppercase;color:var(--gold)}
+h1{font:700 clamp(1.9rem,4.4vw,2.9rem)/1.1 var(--f-head);margin:.3em 0 .35em;text-wrap:balance;max-width:24ch}
+h2{font:700 clamp(1.35rem,2.8vw,1.8rem)/1.2 var(--f-head);margin:0 0 .5em;text-wrap:balance}
+h3{font:700 1.05rem var(--f-head);margin:0 0 .4em}
+.lede{max-width:66ch;font-size:1.08rem;color:var(--ink-2);margin:0}
+section{margin-top:48px}
+.sheet{background:var(--sheet);border:1px solid var(--grid-strong);border-radius:16px;
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:24px 24px;background-position:-1px -1px}
+.card{background:var(--sheet);border:1px solid var(--grid-strong);border-radius:16px;padding:22px 24px}
+
+/* simulator */
+.sim{margin-top:26px;display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:20px;align-items:start}
+.chart{padding:14px 10px 6px}
+.chart svg{display:block;width:100%;height:auto}
+.tabs{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}
+.tab{font:600 .86rem var(--f-head);border:1.5px solid var(--grid-strong);background:var(--sheet);color:var(--ink-2);border-radius:99px;padding:7px 14px;cursor:pointer}
+.tab[aria-pressed="true"]{background:var(--slate);border-color:var(--slate);color:#fff}
+.ctrl{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.btn{font:700 .84rem var(--f-head);letter-spacing:.03em;border:none;border-radius:10px;padding:9px 16px;cursor:pointer;background:var(--gold);color:#1A1005}
+.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--grid-strong)}
+.panel h3{margin-bottom:2px}
+.src{font-size:.8rem;color:var(--muted);margin:0 0 12px}
+.verdict{display:inline-flex;align-items:center;gap:8px;font:700 .82rem var(--f-head);letter-spacing:.06em;text-transform:uppercase;border-radius:99px;padding:6px 14px;margin:6px 0 10px;transition:opacity .4s,transform .4s}
+.verdict.par{background:var(--ok-soft);color:var(--ok)} .verdict.non{background:var(--warn-soft);color:var(--ref)}
+.verdict.hide{opacity:0;transform:translateY(6px)}
+table.rd{width:100%;border-collapse:collapse;font-size:.88rem;margin-top:4px}
+table.rd th{font:700 .66rem var(--f-head);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-align:right;padding:6px 6px;border-bottom:1px solid var(--grid-strong)}
+table.rd th:first-child,table.rd td:first-child{text-align:left}
+table.rd td{font-family:var(--f-mono);font-variant-numeric:tabular-nums;text-align:right;padding:7px 6px;border-bottom:1px solid var(--grid)}
+table.rd tr{transition:background .4s}
+table.rd tr.live{background:var(--gold-soft)}
+table.rd td.app{font-weight:600;color:var(--pat)}
+.explain{font-size:.95rem;color:var(--ink-2);margin:12px 0 0}
+.vtab td{font-family:var(--f-body);font-size:.86rem;text-align:left;vertical-align:top}.vtab td:nth-child(3){font-family:var(--f-mono);white-space:nowrap}.vtab th{text-align:left}
+.vtab td.good{color:var(--ok);font-weight:700}.vtab td.bad{color:var(--ref);font-weight:700}
+.slope{font:500 .82rem var(--f-mono);color:var(--muted);margin-top:8px}
+/* svg classes */
+.gmin{stroke:var(--grid);stroke-width:1}
+.gmaj{stroke:var(--grid-strong);stroke-width:1.2}
+.axis{stroke:var(--ink-2);stroke-width:1.4}
+.tick{fill:var(--muted);font:500 11px var(--f-mono)}
+.tickb{fill:var(--ink-2);font:600 12px var(--f-mono)}
+.atitle{fill:var(--ink-2);font:700 12px var(--f-head);letter-spacing:.06em}
+.refline{stroke:var(--ref);stroke-width:3;fill:none;stroke-linecap:round}
+.patline{stroke:var(--pat);stroke-width:3;fill:none;stroke-linecap:round}
+.refpt{fill:var(--sheet);stroke:var(--ref);stroke-width:2.5}
+.patpt{fill:var(--pat);stroke:var(--sheet);stroke-width:2}
+.read{stroke:var(--gold);stroke-width:2;stroke-dasharray:5 5;fill:none}
+.lab{font:700 12px var(--f-head);letter-spacing:.04em}
+.lab.r{fill:var(--ref)} .lab.p{fill:var(--pat)}
+.pop{transform-box:fill-box;transform-origin:center}
+.vlabel{font:700 13px var(--f-mono);fill:var(--gold)}
+.pv{fill:var(--pat);paint-order:stroke;stroke:var(--sheet);stroke-width:4px}
+
+/* mechanism */
+.mech{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:18px}
+.tube{text-align:center}
+.tube svg{width:100%;max-width:190px;height:auto}
+.tube b{display:block;font:700 1rem var(--f-head)}
+.tube span{font:600 .9rem var(--f-mono);color:var(--pat)}
+.ab{fill:var(--ref)} .fviii{fill:var(--pat)} .pl{fill:var(--gold)}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+.ab,.fviii{animation:bob 2.4s ease-in-out infinite}
+.gauge{height:10px;background:var(--grid);border-radius:99px;overflow:hidden;margin:8px auto 0;max-width:190px}
+.gauge i{display:block;height:100%;background:var(--pat);width:0;transition:width 1.4s cubic-bezier(.2,.8,.2,1)}
+.legend{display:flex;flex-wrap:wrap;gap:16px;font-size:.88rem;color:var(--muted);margin-top:12px}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:6px;vertical-align:-1px}
+
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:16px}
+.cause{border-left:4px solid var(--grid-strong);padding:4px 0 4px 14px}
+.cause.hot{border-color:var(--ref)}
+.cause h3{font-size:1rem}
+.cause p{margin:0;font-size:.95rem;color:var(--ink-2)}
+.debate{margin-top:16px;background:var(--navy-soft);border-radius:14px;padding:18px 22px}
+.debate p{margin:.4em 0;max-width:72ch}
+.rules{counter-reset:r;list-style:none;padding:0;margin:14px 0 0;display:grid;gap:10px;max-width:74ch}
+.rules li{counter-increment:r;position:relative;padding-left:44px}
+.rules li::before{content:counter(r);position:absolute;left:0;top:1px;width:30px;height:30px;border-radius:9px;background:var(--slate);color:var(--gold);display:grid;place-items:center;font:700 .9rem var(--f-head)}
+
+.gallery{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:16px}
+figure{margin:0;background:var(--sheet);border:1px solid var(--grid-strong);border-radius:14px;overflow:hidden;display:flex;flex-direction:column}
+figure img{display:block;width:100%;height:auto;background:#fff;border-bottom:1px solid var(--grid-strong)}
+figcaption{padding:12px 14px;font-size:.84rem;line-height:1.5;color:var(--ink-2)}
+figcaption b{display:block;font:700 .72rem var(--f-head);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+figcaption q{quotes:"\201C" "\201D"}
+.summary{margin-top:16px;background:var(--slate);color:#EEF2F7;border-radius:16px;padding:22px 26px}
+.summary b{display:block;font:700 .74rem var(--f-head);letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:6px}
+.summary p{margin:0;max-width:76ch}
+.refs ol{padding-left:1.4em;margin:10px 0 0;display:grid;gap:8px;font-size:.9rem;overflow-wrap:anywhere}
+.note{font-size:.82rem;color:var(--muted)}
+footer{margin-top:40px;font-size:.84rem;color:var(--muted)}
+@media (max-width:860px){
+  .sim{grid-template-columns:minmax(0,1fr)}
+  .gallery{grid-template-columns:minmax(0,1fr)}
+  .grid2{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:520px){.mech{gap:8px}.tube b{font-size:.85rem}}
+@media (prefers-reduced-motion:reduce){.ab,.fviii{animation:none}.gauge i{transition:none}}
+</style>
+
+<div class="wrap">
+  <div class="eyebrow">One-stage clotting factor assay · FCPS Part II Haematopathology</div>
+  <h1>Non-parallelism, explained in motion</h1>
+  <p class="lede">A one-stage factor assay tests the patient's plasma at several dilutions and compares each clotting time with a reference plasma. If the patient really has a low factor, every dilution gives the same answer and the two lines run parallel. If something in the plasma is interfering with the test, the answer changes with dilution and the lines are not parallel. Pick a scenario and press <b>Play</b>.</p>
+
+  <div class="sim">
+    <div class="sheet chart">
+      <div class="tabs" role="group" aria-label="Scenario">
+        <button class="tab" id="sc-par" type="button" aria-pressed="false" data-s="par">Parallel: true low factor</button>
+        <button class="tab" id="sc-la" type="button" aria-pressed="true" data-s="la">Non-parallel: lupus anticoagulant</button>
+        <button class="tab" id="sc-nil" type="button" aria-pressed="false" data-s="nil">Cannot dilute nothing</button>
+      </div>
+      <svg id="g" viewBox="0 0 760 500" role="img" aria-label="Log-lin graph of clotting time against plasma dilution"></svg>
+      <div class="ctrl">
+        <button class="btn" id="play" type="button">&#9654; Play</button>
+        <button class="btn ghost" id="final" type="button">Show the answer</button>
+      </div>
+    </div>
+    <div class="card panel" aria-live="polite">
+      <h3 id="p-title"></h3>
+      <p class="src" id="p-src"></p>
+      <span class="verdict hide" id="verdict"></span>
+      <table class="rd"><thead><tr><th>Dilution</th><th>Clot time</th><th>Read off reference</th><th>× dilution</th></tr></thead><tbody id="rows"></tbody></table>
+      <p class="slope" id="slope"></p>
+      <p class="note">Numbers above the blue points are the corrected factor level at each dilution (IU/dL).</p>
+      <p class="explain" id="p-explain"></p>
+    </div>
+  </div>
+
+  <section>
+    <h2>Why dilution makes a lupus anticoagulant disappear</h2>
+    <p class="lede">The one-stage assay needs phospholipid. A lupus anticoagulant is an antibody that interferes with that phospholipid step, so the clot forms slowly and the analyser reads too little factor VIII. Each dilution leaves less antibody in the tube, so its effect fades and the apparent factor level climbs towards the truth.</p>
+    <div class="mech" id="mech">
+      <div class="tube"><svg viewBox="0 0 120 200" aria-hidden="true" id="t1"></svg><b>1/10</b><span>apparent FVIII 18</span><div class="gauge"><i style="--w:19.8%"></i></div></div>
+      <div class="tube"><svg viewBox="0 0 120 200" aria-hidden="true" id="t2"></svg><b>1/20</b><span>apparent FVIII 46</span><div class="gauge"><i style="--w:50.5%"></i></div></div>
+      <div class="tube"><svg viewBox="0 0 120 200" aria-hidden="true" id="t3"></svg><b>1/40</b><span>apparent FVIII 82</span><div class="gauge"><i style="--w:90.1%"></i></div></div>
+    </div>
+    <div class="legend"><span><i style="background:var(--ref)"></i>lupus anticoagulant antibody</span><span><i style="background:var(--gold)"></i>phospholipid</span><span><i style="background:var(--pat)"></i>apparent factor VIII (gauge, chromogenic true value 91)</span></div>
+    <p class="note">Numbers are the Extension Station 13 teaching case. The drawing is schematic: it shows the idea, not real molecule counts.</p>
+  </section>
+
+  <section>
+    <h2>When the lines are not parallel</h2>
+    <div class="grid2">
+      <div class="cause hot"><h3>A lupus anticoagulant</h3><p>The classic cause. Seen with lupus-sensitive APTT reagents when the lupus anticoagulant is high-titre; apparent factor activity rises as the antibody is diluted out (Practical Haemostasis).</p></div>
+      <div class="cause"><h3>"You cannot dilute nothing"</h3><p>When the true factor level is below 1 IU/dL, clotting times are very prolonged and nearly identical at every dilution, so the line is flat. That is a severe deficiency, not interference (Practical Haemostasis).</p></div>
+      <div class="cause"><h3>Heparin or another anticoagulant</h3><p>Listed by Friedman and colleagues among the causes, together with a specific factor inhibitor (Chapter 80).</p></div>
+      <div class="cause"><h3>A plotting or technical error</h3><p>Check the data before calling interference: "the data has not been plotted correctly" is the first possibility Practical Haemostasis lists.</p></div>
+    </div>
+    <div class="debate">
+      <h3>Does a specific factor VIII inhibitor cause it? The sources disagree.</h3>
+      <p><b>Not in the original study.</b> Ruinemans-Koerts and colleagues tested type 1 factor VIII inhibitors (19.5 and about 2 NBU/ml), type 2 inhibitors from acquired haemophilia (51.5 and about 2 NBU/ml) and a factor IX inhibitor (about 0.5 NBU/ml). All gave curves parallel to the reference, whatever the incubation time or temperature. Non-parallelism appeared only with high-titre lupus anticoagulants and lupus-sensitive reagents (PTT-LA, APTT-SP); Actin gave parallel lines.</p>
+      <p><b>But it can be seen.</b> In Friedman and colleagues' case (Fig. 80.1, below), the patient with an acquired factor VIII inhibitor gives a non-parallel line, and the chapter lists specific inhibitors among the causes while citing Ruinemans-Koerts for the opposing view.</p>
+      <p><b>And it can appear in the other factor assays.</b> Kurt and Fang describe a patient with a strong factor VIII inhibitor (126 BU) whose factor IX, XI and XII assays were non-parallel. A likely explanation, not stated in the abstract, is that the factor-deficient substrate plasma in those assays still contains factor VIII, which the patient's inhibitor can neutralise; diluting the patient's plasma dilutes the inhibitor.</p>
+      <p><b>For the exam:</b> non-parallelism points to a high-titre lupus anticoagulant. A factor VIII autoantibody gave parallel lines in the primary study, so parallel lines do not exclude an inhibitor: do a mixing study and a Nijmegen-Bethesda assay.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>What the laboratory does about it</h2>
+    <ol class="rules">
+      <li>Test at least three dilutions and compare the patient line with the reference line. Friedman and colleagues note the World Federation of Hemophilia recommends parallel-line analysis, typically when the factor result is below 50%.</li>
+      <li>If the lines are not parallel, the one-stage result must not be reported as a factor level: Practical Haemostasis says the results "should be regarded as incorrect".</li>
+      <li>Repeat with a chromogenic assay, or with a lupus-insensitive (high-phospholipid) APTT reagent. If the repeat gives parallel lines, it is valid.</li>
+      <li>Before calling interference, check the plotting, and remember a flat line at very long clotting times can be a true level below 1 IU/dL.</li>
+    </ol>
+    <div class="summary"><b>Exam-ready summary</b><p>In a one-stage factor assay, a genuine factor deficiency gives the same corrected level at every dilution, so the patient and reference lines are parallel. A lupus anticoagulant interferes with the phospholipid-dependent clot, so it lengthens the clotting time most in the least diluted tube; as the plasma is diluted the antibody is neutralised and the apparent factor level rises (for example 18, 46 and 82 IU/dL at 1/10, 1/20 and 1/40, with a normal chromogenic level). Non-parallel results are invalid: report the chromogenic or lupus-insensitive result instead. A flat line at very long clotting times can be a true level below 1 IU/dL.</p></div>
+  </section>
+
+  <section>
+    <h2>Checked against the original sources</h2>
+    <p class="lede">We read the primary study in full (Ruinemans-Koerts 2010, open-access copy from Radboud University's repository) and recalculated every slope from the clotting times each source prints or plots. A ratio near 1 means parallel. Graph points were read to about ±2 s.</p>
+    <div class="card" style="margin-top:16px;overflow-x:auto">
+      <table class="rd vtab"><thead><tr><th>Source and plasma</th><th>Clotting times (s)</th><th>Slope ratio</th><th>Verdict</th></tr></thead><tbody>
+        <tr><td>Ruinemans-Koerts Fig. 1B: high-titre lupus anticoagulant, FVIII assay</td><td>89.5 → 106 as plasma increases</td><td>−0.76</td><td class="bad">Not parallel: slope reversed</td></tr>
+        <tr><td>Ruinemans-Koerts Fig. 1C: high-titre lupus anticoagulant, FIX assay</td><td>83 → 96</td><td>−0.58</td><td class="bad">Not parallel: slope reversed</td></tr>
+        <tr><td>Ruinemans-Koerts Fig. 1B: FVIII type 1 and 2, about 2 NBU/ml</td><td>104.5 → 78; 97 → 70</td><td>1.18–1.22</td><td class="good">Parallel</td></tr>
+        <tr><td>Ruinemans-Koerts Fig. 1C: FIX inhibitor, 0.5 NBU/ml</td><td>103.5 → 76</td><td>1.17</td><td class="good">Parallel</td></tr>
+        <tr><td>Ruinemans-Koerts Fig. 1B: FVIII 19.5 and 51.5 NBU/ml</td><td>165 → 102; 172.5 → 110.5</td><td>1.5–1.95</td><td>Same direction, steeper; beyond the reference's measured range; the authors judged them parallel</td></tr>
+        <tr><td>Practical Haemostasis worked example: graph points</td><td>55, 59, 64, 69</td><td>1.00</td><td class="good">Parallel, about 1.1 IU/dL</td></tr>
+        <tr><td>Practical Haemostasis worked example: raw-data table</td><td>55, 59, 73, 80</td><td>1.87</td><td class="bad">Not parallel: contradicts its own graph</td></tr>
+        <tr><td>Practical Haemostasis "plot your own" samples 1–3</td><td>see source</td><td>0.97–1.00</td><td class="good">Parallel: about 43, 1.1 and 18.7 IU/dL</td></tr>
+        <tr><td>Friedman Fig. 80.1: sample 2 / sample 1</td><td>48–99 / 75–106</td><td>0.95 / 0.57</td><td>Parallel / not parallel</td></tr>
+      </tbody></table>
+    </div>
+    <div class="gallery" style="grid-template-columns:repeat(2,minmax(0,1fr))">
+      <figure><a class="pubfig" href="https://pubmed.ncbi.nlm.nih.gov/20806127/" target="_blank" rel="noopener" style="display:flex;flex-direction:column;justify-content:center;gap:6px;min-height:180px;padding:18px;border:2px dashed currentColor;border-radius:10px;opacity:.85;text-decoration:none;color:inherit;font-size:.95em;line-height:1.35"><b>Figure not reproduced on the public site</b><span>Ruinemans-Koerts 2010 Figure 1 panels A to C</span><span>View it in the original source: Ruinemans-Koerts et al., Thromb Haemost 2010 &#8599;</span></a><figcaption><b>Ruinemans-Koerts et al. 2010 · Figure 1A–C</b><q>Parallel line bioassay with the one-stage coagulation factor method. The activity of the lowest dilution has been set to 100% for all assays. A) Clotting times of dilutions of reference and patient plasma are plotted against the corresponding log-transformed factor activity. Parallelism of the curves is an indication of correct factor analysis. The horizontal distance between the lines represents the difference in potency. B) Parallel line bioassay of the one-stage factor assay with PTT-LA reagent of FVIII and C) of FIX of patient plasmas containing FVIII and FIX inhibitors or high-titre lupus anticoagulants.</q></figcaption></figure>
+      <figure><a class="pubfig" href="https://pubmed.ncbi.nlm.nih.gov/20806127/" target="_blank" rel="noopener" style="display:flex;flex-direction:column;justify-content:center;gap:6px;min-height:180px;padding:18px;border:2px dashed currentColor;border-radius:10px;opacity:.85;text-decoration:none;color:inherit;font-size:.95em;line-height:1.35"><b>Figure not reproduced on the public site</b><span>Ruinemans-Koerts 2010 Figure 1D flow chart</span><span>View it in the original source: Ruinemans-Koerts et al., Thromb Haemost 2010 &#8599;</span></a><figcaption><b>Ruinemans-Koerts et al. 2010 · Figure 1D</b><q>D) Flow-chart: follow-up of a deviated one-stage coagulation factor assay.</q> Note: the flow chart gives the 1:1 mix incubation as 1 h at 37 °C; the text says 2 h for factor VIII deficiency.</figcaption></figure>
+    </div>
+    <div class="debate">
+      <h3>Two corrections the check produced</h3>
+      <p><b>Inhibitor kinetics are often labelled the wrong way round.</b> Practical Haemostasis calls type I inhibitors "first-order" and type II "second-order". The original description (Gawryl and Hoyer 1982) gives type I as second-order with complete inactivation, and type II as complex with incomplete inactivation. Our Station 2 answer has been corrected to match.</p>
+      <p><b>A textbook worked example disagrees with itself.</b> The Practical Haemostasis graph is parallel; the raw-data table printed beside it is not.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>The graphs, as published</h2>
+    <div class="gallery">
+      <figure><a class="pubfig" href="https://doi.org/10.1007/978-3-031-14638-1_80" target="_blank" rel="noopener" style="display:flex;flex-direction:column;justify-content:center;gap:6px;min-height:180px;padding:18px;border:2px dashed currentColor;border-radius:10px;opacity:.85;text-decoration:none;color:inherit;font-size:.95em;line-height:1.35"><b>Figure not reproduced on the public site</b><span>Friedman et al. Fig. 80.1: clotting time against factor activity for normal pooled plasma and two patients</span><span>View it in the original source: Friedman et al. 2023, Springer chapter &#8599;</span></a><figcaption><b>Friedman et al. 2023 · Fig. 80.1</b><q>Factor VIII coagulant (FVIII:C) activity level assay results. Dilutions are made using FVIII-depleted plasma and buffered saline (factor diluent). Dashed lines show patient FVIII:C activity levels interpolated from the NPP curve. Clotting time is based on activated partial thromboplastin time (aPTT)</q> Triangles: normal pooled plasma (the dashed read-off lines run to this line). Crosses: sample 2, haemophilia A on recombinant factor VIII, 54%, parallel (slope ratio 0.95 on the authors' axis). Diamonds: sample 1, acquired factor VIII inhibitor, 8%, non-parallel (slope ratio 0.57).</figcaption></figure>
+      <figure><a class="pubfig" href="https://practical-haemostasis.com/" target="_blank" rel="noopener" style="display:flex;flex-direction:column;justify-content:center;gap:6px;min-height:180px;padding:18px;border:2px dashed currentColor;border-radius:10px;opacity:.85;text-decoration:none;color:inherit;font-size:.95em;line-height:1.35"><b>Figure not reproduced on the public site</b><span>Practical Haemostasis log-lin graph: patient plasma line parallel to reference, read at 1.5%</span><span>View it in the original source: Practical Haemostasis &#8599;</span></a><figcaption><b>Practical Haemostasis · 1-Stage APTT factor assays</b><q>Log-Lin graph paper demonstrating a 1-stage APTT Factor VIII assay</q> A parallel patient line, read off the reference at the 1/10 dilution as 1.5%. The simulator's reference line is fitted to this graph's reference points (28, 32, 37 and 42 s).</figcaption></figure>
+      <figure><a class="pubfig" href="https://practical-haemostasis.com/" target="_blank" rel="noopener" style="display:flex;flex-direction:column;justify-content:center;gap:6px;min-height:180px;padding:18px;border:2px dashed currentColor;border-radius:10px;opacity:.85;text-decoration:none;color:inherit;font-size:.95em;line-height:1.35"><b>Figure not reproduced on the public site</b><span>Practical Haemostasis log-lin graph of four patient factor VIII assays against the red reference line</span><span>View it in the original source: Practical Haemostasis &#8599;</span></a><figcaption><b>Practical Haemostasis · 1-Stage APTT factor assays</b><q>The graph shows the results of the Factor VIII assays. The reference plasma standard is plotted in red. Note that the lines are parallel.</q></figcaption></figure>
+    </div>
+    <p class="note">Reproduced from your Zotero library and the Practical Haemostasis local mirror for personal study and teaching.</p>
+  </section>
+
+  <section class="refs">
+    <h2>Sources</h2>
+    <ol>
+      <li>Practical-Haemostasis.com. 1-Stage APTT-Based Factor Assays (local mirror): parallel-line method, causes of non-parallelism, "you cannot dilute nothing", lupus anticoagulant and chromogenic or insensitive reagents.</li>
+      <li>Friedman MT, West KA, Bizargity P, Annen K, Gur HD, Hilbert T. Unparalleled Experience. In: <i>Immunohematology, Transfusion Medicine, Hemostasis, and Cellular Therapy: A Case Study Approach</i>, 3rd edn. Springer Nature; 2023:553–557. doi:10.1007/978-3-031-14638-1_80 (verified on Crossref).</li>
+      <li>Ruinemans-Koerts J, Peterse-Stienissen I, Verbruggen B. Non-parallelism in the one-stage coagulation factor assay is a phenomenon of lupus anticoagulants and not of individual factor inhibitors. <i>Thromb Haemost</i> 2010;104(5):1080–1082. PMID 20806127 (verified on PubMed). Read in full from the open-access copy (Radboud University repository, hdl.handle.net/2066/89833); not yet in your Zotero library.</li>
+      <li>Gawryl MS, Hoyer LW. Inactivation of factor VIII coagulant activity by two different types of human antibodies. <i>Blood</i> 1982;60(5):1103–1109. PMID 6181833 (verified on PubMed).</li>
+      <li>Kurt S, Fang Y. A Tale of Two Cases: Acquired Hemophilia A and/or Lupus Anticoagulant? <i>Am J Clin Pathol</i> 2024;162(Suppl 1). doi:10.1093/ajcp/aqae129.369 (verified on Crossref). Meeting abstract, not a full peer-reviewed paper.</li>
+    </ol>
+  </section>
+  <footer>Dr Abdul Mannan FRCPath FCPS · Consultant Haematologist · Blood🩸Doctor teaching material. Simulator values are calculated from the fitted reference line; teaching-case numbers are labelled where used.</footer>
+</div>
+
+<script>
+(function(){
+  var NS="http://www.w3.org/2000/svg", svg=document.getElementById("g");
+  var RM=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches;
+  // plot frame
+  var L=70,R=735,T=24,B=430, X0=0, X1=Math.log10(200), Y0=10, Y1=110;
+  function X(pct){return L+(Math.log10(pct)-X0)/(X1-X0)*(R-L)}
+  function Y(ct){return B-(ct-Y0)/(Y1-Y0)*(B-T)}
+  function el(n,a,p){var e=document.createElementNS(NS,n);for(var k in a)e.setAttribute(k,a[k]);(p||svg).appendChild(e);return e}
+  // reference: least-squares fit to Practical Haemostasis reference points (100%:28 s, 50%:32 s, 20%:37 s, 10%:42 s)
+  var RP=[[100,28],[50,32],[20,37],[10,42]];
+  var mx=0,my=0;RP.forEach(function(p){mx+=Math.log10(p[0]);my+=p[1]});mx/=4;my/=4;
+  var sxy=0,sxx=0;RP.forEach(function(p){var dx=Math.log10(p[0])-mx;sxy+=dx*(p[1]-my);sxx+=dx*dx});
+  var SLOPE=sxy/sxx; function refCT(pct){return my+SLOPE*(Math.log10(pct)-mx)} function refPct(ct){return Math.pow(10,mx+(ct-my)/SLOPE)}
+  // grid
+  var gg=el("g",{});
+  for(var dec=0;dec<3;dec++)for(var m=1;m<10;m++){var v=m*Math.pow(10,dec);if(v>200)break;el("line",{x1:X(v),x2:X(v),y1:T,y2:B,"class":m===1?"gmaj":"gmin"},gg)}
+  for(var y=Y0;y<=Y1;y+=5)el("line",{x1:L,x2:R,y1:Y(y),y2:Y(y),"class":y%10===0?"gmaj":"gmin"},gg);
+  el("line",{x1:L,x2:L,y1:T,y2:B,"class":"axis"});el("line",{x1:L,x2:R,y1:B,y2:B,"class":"axis"});
+  for(y=Y0;y<=Y1;y+=10){var t=el("text",{x:L-10,y:Y(y)+4,"text-anchor":"end","class":"tick"});t.textContent=y}
+  [[1,"1/1000","1%"],[10,"1/100","10%"],[20,"1/50","20%"],[50,"1/20","50%"],[100,"1/10","100%"],[200,"1/5","200%"]].forEach(function(d){
+    var a=el("text",{x:X(d[0]),y:B+18,"text-anchor":"middle","class":"tickb"});a.textContent=d[1];
+    var b=el("text",{x:X(d[0]),y:B+33,"text-anchor":"middle","class":"tick"});b.textContent=d[2]});
+  var at=el("text",{x:(L+R)/2,y:B+56,"text-anchor":"middle","class":"atitle"});at.textContent="DILUTION OF PLASMA (LOG SCALE) \u00B7 FACTOR IN THE TEST, % OF A 1/10 NORMAL";
+  var yt=el("text",{x:18,y:(T+B)/2,"text-anchor":"middle","class":"atitle",transform:"rotate(-90 18 "+(T+B)/2+")"});yt.textContent="CLOTTING TIME (S)";
+  var layer=el("g",{});
+  // scenarios
+  var S={
+    par:{title:"Parallel: a true low factor",src:"Clotting times from the Practical Haemostasis worked graph (patient 55, 59, 64, 69 s at 1/10, 1/20, 1/50, 1/100).",
+      pts:[[1,55],[2,59],[5,64],[10,69]],
+      explain:"Every dilution gives the same corrected level, about 1 IU/dL, so the patient line runs parallel to the reference. The result is valid. These are the points drawn on the Practical Haemostasis graph (read by eye there as 1.5%; calculated here as about 1.1%). Its raw-data table gives 73 and 80 s at the last two dilutions instead, which would not be parallel: the textbook contradicts itself."},
+    la:{title:"Non-parallel: a lupus anticoagulant",src:"Extension Station 13 teaching case: one-stage FVIII 18, 46, 82 IU/dL at 1/10, 1/20, 1/40; chromogenic FVIII 91 IU/dL.",
+      pts:[[1,null,18],[2,null,46],[4,null,82]],
+      explain:"The corrected level climbs with each dilution because the lupus anticoagulant is being diluted out. The clotting time barely changes while the reference line falls, so the lines diverge. These results are invalid; the chromogenic assay (91 IU/dL) gives the true level."},
+    nil:{title:"Cannot dilute nothing: below 1 IU/dL",src:"Illustrative values for the pattern Practical Haemostasis describes: very prolonged and identical clotting times at every dilution.",
+      pts:[[1,96],[2,96],[4,96]],
+      explain:"With no factor VIII to dilute, every tube clots equally slowly and the line is flat. It is non-parallel, but it is a true severe deficiency, not interference. Severity of the prolongation and the bleeding history tell the two apart."}
+  };
+  // complete points
+  Object.keys(S).forEach(function(k){S[k].pts=S[k].pts.map(function(p){var d=p[0],ct=p[1];if(ct===null)ct=refCT(p[2]/d);return {d:d,ct:ct,x:100/d}})});
+  var cur="la",timer=[];
+  function clear(){timer.forEach(clearTimeout);timer=[];while(layer.firstChild)layer.removeChild(layer.firstChild)}
+  function later(fn,ms){if(RM)fn();else timer.push(setTimeout(fn,ms))}
+  function drawLine(x1,y1,x2,y2,cls,dur){var l=el("line",{x1:x1,y1:y1,x2:x2,y2:y2,"class":cls},layer);
+    if(!RM&&dur){var len=Math.hypot(x2-x1,y2-y1);l.style.strokeDasharray=cls==="read"?"5 5":len;l.style.strokeDashoffset=len;
+      l.animate([{strokeDashoffset:len},{strokeDashoffset:0}],{duration:dur,easing:"cubic-bezier(.2,.8,.2,1)",fill:"forwards"})}return l}
+  function dot(cx,cy,cls,r){var c=el("circle",{cx:cx,cy:cy,r:r||6,"class":cls+" pop"},layer);if(!RM)c.animate([{transform:"scale(0)"},{transform:"scale(1.35)"},{transform:"scale(1)"}],{duration:520,easing:"ease-out"});return c}
+  function fit(pts){var a=0,b=0,n=pts.length;pts.forEach(function(p){a+=Math.log10(p.x);b+=p.ct});a/=n;b/=n;var sxy=0,sxx=0;pts.forEach(function(p){var dx=Math.log10(p.x)-a;sxy+=dx*(p.ct-b);sxx+=dx*dx});var s=sxy/sxx;return {s:s,f:function(x){return b+s*(Math.log10(x)-a)}}}
+  function fmt(v){return v<1?"<1":v<10?v.toFixed(1):Math.round(v)}
+  function run(instant){
+    clear();var sc=S[cur];var save=RM;if(instant)RM=true;
+    document.getElementById("p-title").textContent=sc.title;document.getElementById("p-src").textContent=sc.src;
+    document.getElementById("p-explain").textContent="";document.getElementById("slope").textContent="";
+    var vd=document.getElementById("verdict");vd.className="verdict hide";
+    var rows=document.getElementById("rows");rows.innerHTML="";
+    // 1 reference line + points
+    drawLine(X(3),Y(refCT(3)),X(200),Y(refCT(200)),"refline",1100);
+    later(function(){RP.forEach(function(p,i){later(function(){dot(X(p[0]),Y(p[1]),"refpt",5)},i*120)});
+      var lr=el("text",{x:X(150),y:Y(refCT(150))+26,"class":"lab r"},layer);lr.textContent="Reference";},700);
+    // 2 patient points with read-off paths
+    var t0=1500,step=1500;
+    sc.pts.forEach(function(p,i){
+      later(function(){
+        var px=X(p.x),py=Y(p.ct);dot(px,py,"patpt",7);
+        var rp=refPct(p.ct),app=rp*p.d,rx=X(Math.max(rp,1.001));
+        if(rp>=1){drawLine(px,py,rx,py,"read",500);later(function(){drawLine(rx,py,rx,B,"read",450)},450);
+          null}
+        later(function(){var v=el("text",{x:px,y:py-14,"text-anchor":"middle","class":"vlabel pv"},layer);v.textContent=fmt(app);
+          if(!RM)v.animate([{opacity:0,transform:"translateY(6px)"},{opacity:1,transform:"none"}],{duration:500,fill:"both"})},700);
+        var tr=document.createElement("tr");tr.className="live";
+        tr.innerHTML="<td>1/"+(10*p.d)+"</td><td>"+p.ct.toFixed(1)+" s</td><td>"+fmt(rp)+"%</td><td class=\"app\">"+fmt(app)+(app<1?"":" IU/dL")+"</td>";
+        rows.appendChild(tr);later(function(){tr.className=""},1200);
+      },t0+i*step)});
+    // 3 best-fit line and verdict
+    later(function(){var f=fit(sc.pts),xs=sc.pts.map(function(p){return p.x}),lo=Math.min.apply(0,xs)/1.6,hi=Math.min(Math.max.apply(0,xs)*1.6,200);
+      drawLine(X(lo),Y(f.f(lo)),X(hi),Y(f.f(hi)),"patline",900);
+      var lp=el("text",{x:X(lo)-4,y:Y(f.f(lo))-10,"text-anchor":"start","class":"lab p"},layer);lp.textContent="Patient";
+      var ratio=f.s/SLOPE;var par=Math.abs(ratio-1)<0.25;
+      later(function(){vd.textContent=par?"Parallel · valid":"Not parallel · do not report";vd.className="verdict "+(par?"par":"non");
+        document.getElementById("slope").textContent="Slope ratio, patient ÷ reference: "+ratio.toFixed(2)+" (close to 1 means parallel; the badge uses an illustrative ±25% band, not a published criterion)";
+        document.getElementById("p-explain").textContent=sc.explain},600)},t0+sc.pts.length*step+200);
+    if(instant)RM=save;
+  }
+  document.querySelectorAll(".tab").forEach(function(b){b.addEventListener("click",function(){cur=b.dataset.s;
+    document.querySelectorAll(".tab").forEach(function(o){o.setAttribute("aria-pressed",o===b?"true":"false")});run(false)})});
+  document.getElementById("play").addEventListener("click",function(){run(false)});
+  document.getElementById("final").addEventListener("click",function(){run(true)});
+  run(true);                                   // complete at rest
+  if(!RM)setTimeout(function(){run(false)},1400); // then play once
+
+  // tubes: antibodies thin out with dilution; factor VIII gauge rises
+  function tube(id,ab){var s=document.getElementById(id);
+    el("rect",{x:30,y:8,width:60,height:180,rx:28,fill:"none",stroke:"var(--grid-strong)","stroke-width":3},s);
+    el("rect",{x:34,y:60,width:52,height:124,rx:24,fill:"var(--navy-soft)"},s);
+    for(var i=0;i<6;i++)el("rect",{x:40+(i%3)*15,y:120+Math.floor(i/3)*30,width:10,height:4,rx:2,"class":"pl"},s);
+    var seed=7;function r(){seed=(seed*9301+49297)%233280;return seed/233280}
+    for(i=0;i<ab;i++){var g=el("g",{"class":"ab",style:"animation-delay:"+(r()*2).toFixed(2)+"s"},s);var x=40+r()*40,y=70+r()*100;
+      el("path",{d:"M"+x+" "+y+" l5 7 l5 -7 M"+(x+5)+" "+(y+7)+" v7",stroke:"var(--ref)","stroke-width":2.4,fill:"none","stroke-linecap":"round"},g)}
+    for(i=0;i<3;i++)el("circle",{cx:45+i*15,cy:90+r()*60,r:4.5,"class":"fviii",style:"animation-delay:"+(r()*2).toFixed(2)+"s"},s)}
+  tube("t1",12);tube("t2",5);tube("t3",1);
+  var gauges=document.querySelectorAll(".gauge i");
+  function fill(){gauges.forEach(function(g){g.style.width=g.style.getPropertyValue("--w")})}
+  if("IntersectionObserver" in window&&!RM){var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){fill();io.disconnect()}})},{threshold:.4});io.observe(document.getElementById("mech"))}else fill();
+})();
+</script>
+</body></html>
