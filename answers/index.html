@@ -199,15 +199,17 @@ footer{max-width:1180px;margin:0 auto;padding-inline:20px;padding-block:20px 50p
 }
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 
+.ccw,.ccw *,.ccw *::before,.ccw *::after{box-sizing:border-box}
 .ccw{--cc-acc:#3D86B8;--cc-line:color-mix(in srgb,currentColor 22%,transparent);--cc-fill:color-mix(in srgb,currentColor 6%,transparent);
   border:1px solid var(--cc-line);border-radius:12px;padding:18px;margin:16px 0;display:grid;gap:14px;text-align:left}
 .ccw .cc-h{display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.05em}
 .ccw .cc-tube{display:inline-block;width:.6em;height:1.1em;border-radius:2px 2px 5px 5px;background:linear-gradient(var(--cc-acc) 0 34%,var(--cc-line) 34% 100%)}
-.ccw .cc-cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:18px}
+.ccw .cc-cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:18px 28px}
+.ccw .cc-cols>*{min-width:0}
 @media (max-width:640px){.ccw .cc-cols{grid-template-columns:minmax(0,1fr)}}
 .ccw .cc-in{display:grid;gap:10px;align-content:start}
 .ccw label{display:grid;gap:4px;font-weight:600;font-size:.9em}
-.ccw input{font:inherit;font-family:ui-monospace,"JetBrains Mono","SF Mono",Menlo,Consolas,monospace;color:inherit;background:var(--cc-fill);
+.ccw input{display:block;max-width:100%;margin:0;font:inherit;font-family:ui-monospace,"JetBrains Mono","SF Mono",Menlo,Consolas,monospace;color:inherit;background:var(--cc-fill);
   border:1px solid var(--cc-line);border-radius:6px;padding:.4em .55em;width:100%}
 .ccw input:focus-visible,.ccw button:focus-visible{outline:3px solid var(--cc-acc);outline-offset:2px}
 .ccw .cc-chips{display:flex;flex-wrap:wrap;gap:6px}
@@ -230,7 +232,9 @@ footer{max-width:1180px;margin:0 auto;padding-inline:20px;padding-block:20px 50p
 .ccw tr.pick td{background:color-mix(in srgb,var(--cc-acc) 14%,transparent)}
 .ccw .cc-src{font-size:.8em;opacity:.8}
 .ccw .cc-src a{color:var(--cc-acc)}
-.slide .ccw{font-size:24px;margin:0;padding:24px}
+.slide .ccw{font-size:24px;margin:0;padding:24px 28px}
+.slide .ccw .cc-cols{gap:18px 56px}
+.slide .ccw .cc-kv dd{white-space:nowrap}
 .slide .ccw .cc-h{display:none}
 </style>
 <header class="bar"><div class="bar-in"><span class="mark">Blood<i>&#129656;</i>Doctor</span>
