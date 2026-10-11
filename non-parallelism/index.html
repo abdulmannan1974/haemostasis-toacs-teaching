@@ -48,7 +48,7 @@ section{margin-top:48px}
 .panel h3{margin-bottom:2px}
 .src{font-size:.8rem;color:var(--muted);margin:0 0 12px}
 .verdict{display:inline-flex;align-items:center;gap:8px;font:700 .82rem var(--f-head);letter-spacing:.06em;text-transform:uppercase;border-radius:99px;padding:6px 14px;margin:6px 0 10px;transition:opacity .4s,transform .4s}
-.verdict.par{background:var(--ok-soft);color:var(--ok)} .verdict.non{background:var(--warn-soft);color:var(--ref)}
+.verdict.flat{background:var(--gold-soft);color:var(--ink)} .verdict.par{background:var(--ok-soft);color:var(--ok)} .verdict.non{background:var(--warn-soft);color:var(--ref)}
 .verdict.hide{opacity:0;transform:translateY(6px)}
 table.rd{width:100%;border-collapse:collapse;font-size:.88rem;margin-top:4px}
 table.rd th{font:700 .66rem var(--f-head);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-align:right;padding:6px 6px;border-bottom:1px solid var(--grid-strong)}
@@ -81,15 +81,23 @@ table.rd td.app{font-weight:600;color:var(--pat)}
 
 /* mechanism */
 .mech{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:18px}
-.tube{text-align:center}
-.tube svg{width:100%;max-width:190px;height:auto}
+.tube{text-align:center;font:inherit;color:inherit;background:none;border:2px solid transparent;border-radius:14px;padding:6px 4px 10px;cursor:pointer;transition:opacity .45s,border-color .45s}
+.tube:hover{border-color:var(--grid-strong)}
+.tube.dim{opacity:.38}
+.tube.now{border-color:var(--gold)}
+.tube svg{display:block;margin:0 auto;width:100%;max-width:190px;height:auto}
 .tube b{display:block;font:700 1rem var(--f-head)}
 .tube span{font:600 .9rem var(--f-mono);color:var(--pat)}
-.ab{fill:var(--ref)} .fviii{fill:var(--pat)} .pl{fill:var(--gold)}
-@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
-.ab,.fviii{animation:bob 2.4s ease-in-out infinite}
-.gauge{height:10px;background:var(--grid);border-radius:99px;overflow:hidden;margin:8px auto 0;max-width:190px}
-.gauge i{display:block;height:100%;background:var(--pat);width:0;transition:width 1.4s cubic-bezier(.2,.8,.2,1)}
+.tube span small{display:block;font:600 .7rem var(--f-head);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.site{fill:var(--gold)} .site.taken{fill:var(--grid-strong)}
+.f8{fill:var(--pat);stroke:var(--sheet);stroke-width:1.5}
+.gauge{display:block;position:relative;height:10px;background:var(--grid);border-radius:99px;overflow:hidden;margin:8px auto 0;max-width:190px}
+.gauge i{display:block;height:100%;background:var(--pat);width:var(--w)}
+.gauge .mark{position:absolute;left:91%;top:0;bottom:0;width:3px;background:var(--ink)}
+.stepcap{margin:14px 0 0;min-height:4.8em;background:var(--sheet);border:1px solid var(--grid-strong);border-left:4px solid var(--gold);border-radius:12px;padding:12px 16px;font-size:.98rem;color:var(--ink-2);max-width:78ch}
+.stepcap b{color:var(--ink)}
+.mechbar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-top:12px}
+.mechbar .legend{margin-top:0}
 .legend{display:flex;flex-wrap:wrap;gap:16px;font-size:.88rem;color:var(--muted);margin-top:12px}
 .legend i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:6px;vertical-align:-1px}
 
@@ -122,7 +130,7 @@ footer{margin-top:40px;font-size:.84rem;color:var(--muted)}
   .grid2{grid-template-columns:minmax(0,1fr)}
 }
 @media (max-width:520px){.mech{gap:8px}.tube b{font-size:.85rem}}
-@media (prefers-reduced-motion:reduce){.ab,.fviii{animation:none}.gauge i{transition:none}}
+@media (prefers-reduced-motion:reduce){.tube{transition:none}}
 </style>
 
 <div class="wrap">
@@ -155,15 +163,19 @@ footer{margin-top:40px;font-size:.84rem;color:var(--muted)}
   </div>
 
   <section>
-    <h2>Why dilution makes a lupus anticoagulant disappear</h2>
-    <p class="lede">The one-stage assay needs phospholipid. A lupus anticoagulant is an antibody that interferes with that phospholipid step, so the clot forms slowly and the analyser reads too little factor VIII. Each dilution leaves less antibody in the tube, so its effect fades and the apparent factor level climbs towards the truth.</p>
+    <h2>Why a lupus anticoagulant fades on dilution</h2>
+    <p class="lede">The APTT reagent adds the same amount of phospholipid to every tube. A lupus anticoagulant binds to that phospholipid surface, through phospholipid-binding proteins, and gets in the way of the clotting complexes that assemble there. The clot forms slowly and the analyser reads too little factor VIII. Each doubling dilution halves the antibody, but the reagent phospholipid stays the same, so more of the surface is free. The interference fades and the apparent level climbs towards the true value.</p>
     <div class="mech" id="mech">
-      <div class="tube"><svg viewBox="0 0 120 200" aria-hidden="true" id="t1"></svg><b>1/10</b><span>apparent FVIII 18</span><div class="gauge"><i style="--w:19.8%"></i></div></div>
-      <div class="tube"><svg viewBox="0 0 120 200" aria-hidden="true" id="t2"></svg><b>1/20</b><span>apparent FVIII 46</span><div class="gauge"><i style="--w:50.5%"></i></div></div>
-      <div class="tube"><svg viewBox="0 0 120 200" aria-hidden="true" id="t3"></svg><b>1/40</b><span>apparent FVIII 82</span><div class="gauge"><i style="--w:90.1%"></i></div></div>
+      <button class="tube" type="button" data-i="0" aria-label="Play the 1/10 tube"><svg viewBox="12 30 96 166" aria-hidden="true" id="t1"></svg><b>1/10</b><span><small>Apparent FVIII</small>18 IU/dL</span><span class="gauge"><i style="--w:18%"></i><b class="mark"></b></span></button>
+      <button class="tube" type="button" data-i="1" aria-label="Play the 1/20 tube"><svg viewBox="12 30 96 166" aria-hidden="true" id="t2"></svg><b>1/20</b><span><small>Apparent FVIII</small>46 IU/dL</span><span class="gauge"><i style="--w:46%"></i><b class="mark"></b></span></button>
+      <button class="tube" type="button" data-i="2" aria-label="Play the 1/40 tube"><svg viewBox="12 30 96 166" aria-hidden="true" id="t3"></svg><b>1/40</b><span><small>Apparent FVIII</small>82 IU/dL</span><span class="gauge"><i style="--w:82%"></i><b class="mark"></b></span></button>
     </div>
-    <div class="legend"><span><i style="background:var(--ref)"></i>lupus anticoagulant antibody</span><span><i style="background:var(--gold)"></i>phospholipid</span><span><i style="background:var(--pat)"></i>apparent factor VIII (gauge, chromogenic true value 91)</span></div>
-    <p class="note">Numbers are the Extension Station 13 teaching case. The drawing is schematic: it shows the idea, not real molecule counts.</p>
+    <p class="stepcap" id="stepcap" aria-live="polite"></p>
+    <div class="mechbar">
+      <div class="legend"><span><i style="background:var(--ref)"></i>lupus anticoagulant</span><span><i style="background:var(--pat)"></i>factor VIII</span><span><i style="background:var(--gold);border-radius:3px"></i>free reagent phospholipid</span><span><i style="background:var(--grid-strong);border-radius:3px"></i>phospholipid blocked by antibody</span><span><i style="background:var(--ink);width:4px;border-radius:1px"></i>chromogenic FVIII, 91 IU/dL</span></div>
+      <button class="btn ghost" id="replay" type="button">&#8635; Play all three</button>
+    </div>
+    <p class="note">Tap a tube to replay just that one. Antibody and factor VIII both halve with each dilution; only the reagent phospholipid stays the same. The analyser multiplies back by the dilution, so the blue bar is the corrected level on a 0 to 100 IU/dL scale. Numbers are the Extension Station 13 teaching case. The drawing is schematic: it shows the idea, not real molecule counts.</p>
   </section>
 
   <section>
@@ -176,22 +188,23 @@ footer{margin-top:40px;font-size:.84rem;color:var(--muted)}
     </div>
     <div class="debate">
       <h3>Does a specific factor VIII inhibitor cause it? It depends which assay you look at.</h3>
-      <p><b>In its own factor VIII assay: usually not.</b> Ruinemans-Koerts and colleagues tested type 1 factor VIII inhibitors (19.5 and about 2 NBU/ml), type 2 inhibitors from acquired haemophilia (51.5 and about 2 NBU/ml) and a factor IX inhibitor (about 0.5 NBU/ml). All gave curves parallel to the reference, whatever the incubation time or temperature, because these antibodies bind the factor essentially irreversibly. Non-parallelism appeared only with high-titre lupus anticoagulants and lupus-sensitive reagents (PTT-LA, APTT-SP); Actin gave parallel lines. They add that parallelism does not exclude a factor antibody.</p>
+      <p><b>In its own factor VIII assay: usually not, by the authors' reading.</b> Ruinemans-Koerts and colleagues tested type 1 factor VIII inhibitors (19.5 and about 2 NBU/ml), type 2 inhibitors from acquired haemophilia (51.5 and about 2 NBU/ml) and a factor IX inhibitor (about 0.5 NBU/ml). The authors judged all of them parallel to the reference, whatever the incubation time or temperature, because these antibodies bind the factor essentially irreversibly; they add that parallelism does not exclude a factor antibody. Their own Figure 1B is less tidy. The two low-titre factor VIII inhibitors are parallel (slope ratio about 1.2). The 19.5 and 51.5 NBU/ml inhibitors run in the same direction but about 1.8 to 1.9 times as steep, and every one of their clotting times (102 to 173 s) is longer than the longest reference time (about 99 s), so none of those points can be read off the reference curve. Non-parallelism appeared only with high-titre lupus anticoagulants and lupus-sensitive reagents (PTT-LA, APTT-SP); Actin gave parallel lines.</p>
       <p><b>In the other intrinsic factor assays: yes.</b> The factor IX-, XI- and XII-deficient substrate plasmas contain normal factor VIII, which the patient's antibody neutralises. International recommendations: "A decrease in all intrinsic coagulation factors may be an in vitro false result arising from inhibitor-induced FVIII depletion in the substrate plasma" (Tiede 2020). The 2026 BSH/UKHCDO guideline extends the dilutions from 1/10–1/40 to 1/80–1/320, which "should correct the non-specifically reduced factors while the specifically reduced factor will remain low" (Percy 2026). Kurt and Fang describe exactly this: a strong factor VIII inhibitor (126 BU) with non-parallel factor IX, XI and XII assays.</p>
-      <p><b>And occasionally in its own assay.</b> BSH 2020 notes that parallelism "may also be lost in patients with other immediate-acting inhibitors", and Friedman and colleagues' teaching case (Fig. 80.1, below) shows a non-parallel factor VIII line in a patient with an acquired inhibitor.</p>
-      <p><b>For the exam:</b> a lupus anticoagulant makes every intrinsic factor rise with dilution. A factor VIII inhibitor keeps factor VIII low and parallel, but can make factors IX, XI and XII falsely low and non-parallel until they are diluted further. Parallel lines never exclude an inhibitor: do an incubated mixing study and a Nijmegen-Bethesda assay.</p>
+      <p><b>And sometimes in its own assay.</b> BSH 2020 notes that parallelism "may also be lost in patients with other immediate-acting inhibitors". Friedman and colleagues' teaching case (Fig. 80.1, below) shows a non-parallel factor VIII line in a patient with an acquired inhibitor, and the high-titre lines in Ruinemans-Koerts Figure 1B sit outside the reference curve altogether.</p>
+      <p><b>For the exam:</b> a lupus anticoagulant makes every intrinsic factor rise with dilution. A factor VIII inhibitor keeps factor VIII low (usually parallel), but can make factors IX, XI and XII falsely low and non-parallel until they are diluted further, while the specific factor stays low. Parallel lines never exclude an inhibitor: do an incubated mixing study and a Nijmegen-Bethesda assay.</p>
     </div>
   </section>
 
   <section>
     <h2>What the laboratory does about it</h2>
     <ol class="rules">
-      <li>Test at least three dilutions and compare the patient line with the reference line. Friedman and colleagues note the World Federation of Hemophilia recommends parallel-line analysis, typically when the factor result is below 50%.</li>
+      <li>Test at least three dilutions and compare the patient line with the reference line. Friedman and colleagues note the World Federation of Hemophilia recommends parallel-line analysis, typically when the factor result is below 50%. The Ruinemans-Koerts flow chart (Fig. 1D) moves to multiple dilutions whenever a single-dilution result falls below the lower limit of the reference range.</li>
       <li>If the lines are not parallel, the one-stage result must not be reported as a factor level: Practical Haemostasis says the results "should be regarded as incorrect".</li>
-      <li>Repeat with a chromogenic assay, or with a lupus-insensitive (high-phospholipid) APTT reagent. If the repeat gives parallel lines, it is valid.</li>
+      <li>Repeat with a chromogenic assay (the next step in the Ruinemans-Koerts flow chart), or with a lupus-insensitive (high-phospholipid) APTT reagent. If the repeat gives parallel lines, it is valid. Then test for a lupus anticoagulant.</li>
+      <li>If the lines are parallel but the level is low, mix the patient plasma 1:1 with buffered normal pooled plasma and incubate (1 h at 37 °C in the flow chart). No correction means an inhibitor: measure it with a Nijmegen-Bethesda assay. Correction does not close the case: the flow chart still flags a possible type 2 factor VIII inhibitor.</li>
       <li>Before calling interference, check the plotting, and remember a flat line at very long clotting times can be a true level below 1 IU/dL.</li>
     </ol>
-    <div class="summary"><b>Exam-ready summary</b><p>In a one-stage factor assay, a genuine factor deficiency gives the same corrected level at every dilution, so the patient and reference lines are parallel. A lupus anticoagulant interferes with the phospholipid-dependent clot, so it lengthens the clotting time most in the least diluted tube; as the plasma is diluted the antibody is neutralised and the apparent factor level rises (for example 18, 46 and 82 IU/dL at 1/10, 1/20 and 1/40, with a normal chromogenic level). A factor VIII inhibitor behaves differently: factor VIII stays low and parallel, but factors IX, XI and XII can read falsely low and non-parallel until diluted further, and parallel lines never exclude an inhibitor. Non-parallel results are invalid: report the chromogenic or lupus-insensitive result instead. A flat line at very long clotting times can be a true level below 1 IU/dL.</p></div>
+    <div class="summary"><b>Exam-ready summary</b><p>In a one-stage factor assay, a genuine factor deficiency gives the same corrected level at every dilution, so the patient and reference lines are parallel. A lupus anticoagulant interferes with the phospholipid-dependent clot, so it lengthens the clotting time most in the least diluted tube; as the plasma is diluted the antibody is diluted out and the apparent factor level rises (for example 18, 46 and 82 IU/dL at 1/10, 1/20 and 1/40, with a normal chromogenic level). Non-parallel results are invalid: report the chromogenic or lupus-insensitive result instead, then test for a lupus anticoagulant. A factor VIII inhibitor behaves differently: factor VIII stays low, but factors IX, XI and XII can read falsely low and non-parallel until diluted further. Parallel lines do not exclude a factor inhibitor, because low-titre inhibitors gave parallel lines in the primary study. A flat line at very long clotting times can be a true level below 1 IU/dL.</p></div>
   </section>
 
   <section>
@@ -203,7 +216,7 @@ footer{margin-top:40px;font-size:.84rem;color:var(--muted)}
         <tr><td>Ruinemans-Koerts Fig. 1C: high-titre lupus anticoagulant, FIX assay</td><td>83 → 96</td><td>−0.58</td><td class="bad">Not parallel: slope reversed</td></tr>
         <tr><td>Ruinemans-Koerts Fig. 1B: FVIII type 1 and 2, about 2 NBU/ml</td><td>104.5 → 78; 97 → 70</td><td>1.18–1.22</td><td class="good">Parallel</td></tr>
         <tr><td>Ruinemans-Koerts Fig. 1C: FIX inhibitor, 0.5 NBU/ml</td><td>103.5 → 76</td><td>1.17</td><td class="good">Parallel</td></tr>
-        <tr><td>Ruinemans-Koerts Fig. 1B: FVIII 19.5 and 51.5 NBU/ml</td><td>165 → 102; 172.5 → 110.5</td><td>1.5–1.95</td><td>Same direction, steeper; beyond the reference's measured range; the authors judged them parallel</td></tr>
+        <tr><td>Ruinemans-Koerts Fig. 1B: FVIII 19.5 and 51.5 NBU/ml</td><td>165 → 102; 172.5 → 110.5</td><td>1.8–1.9</td><td>Not strictly parallel: same direction, nearly twice as steep, and longer than every reference clotting time (max about 99 s). The authors judged them parallel</td></tr>
         <tr><td>Practical Haemostasis worked example: graph points</td><td>55, 59, 64, 69</td><td>1.00</td><td class="good">Parallel, about 1.1 IU/dL</td></tr>
         <tr><td>Practical Haemostasis worked example: raw-data table</td><td>55, 59, 73, 80</td><td>1.87</td><td class="bad">Not parallel: contradicts its own graph</td></tr>
         <tr><td>Practical Haemostasis "plot your own" samples 1–3</td><td>see source</td><td>0.97–1.00</td><td class="good">Parallel: about 43, 1.1 and 18.7 IU/dL</td></tr>
@@ -224,11 +237,11 @@ footer{margin-top:40px;font-size:.84rem;color:var(--muted)}
   <section>
     <h2>The graphs, as published</h2>
     <div class="gallery">
-      <figure><a class="pubfig" href="https://doi.org/10.1007/978-3-031-14638-1_80" target="_blank" rel="noopener" style="display:flex;flex-direction:column;justify-content:center;gap:6px;min-height:180px;padding:18px;border:2px dashed currentColor;border-radius:10px;opacity:.85;text-decoration:none;color:inherit;font-size:.95em;line-height:1.35"><b>Figure not reproduced on the public site</b><span>Friedman et al. Fig. 80.1: clotting time against factor activity for normal pooled plasma and two patients</span><span>View it in the original source: Friedman et al. 2023, Springer chapter &#8599;</span></a><figcaption><b>Friedman et al. 2023 · Fig. 80.1</b><q>Factor VIII coagulant (FVIII:C) activity level assay results. Dilutions are made using FVIII-depleted plasma and buffered saline (factor diluent). Dashed lines show patient FVIII:C activity levels interpolated from the NPP curve. Clotting time is based on activated partial thromboplastin time (aPTT)</q> Triangles: normal pooled plasma (the dashed read-off lines run to this line). Crosses: sample 2, haemophilia A on recombinant factor VIII, 54%, parallel (slope ratio 0.95 on the authors' axis). Diamonds: sample 1, acquired factor VIII inhibitor, 8%, non-parallel (slope ratio 0.57).</figcaption></figure>
+      <figure><a class="pubfig" href="https://doi.org/10.1007/978-3-031-14638-1_80" target="_blank" rel="noopener" style="display:flex;flex-direction:column;justify-content:center;gap:6px;min-height:180px;padding:18px;border:2px dashed currentColor;border-radius:10px;opacity:.85;text-decoration:none;color:inherit;font-size:.95em;line-height:1.35"><b>Figure not reproduced on the public site</b><span>Friedman et al. Fig. 80.1: clotting time against factor activity for normal pooled plasma and two patients</span><span>View it in the original source: Friedman et al. 2023, Springer chapter &#8599;</span></a><figcaption><b>Friedman et al. 2023 · Fig. 80.1</b><q>Factor VIII coagulant (FVIII:C) activity level assay results. Dilutions are made using FVIII-depleted plasma and buffered saline (factor diluent). Dashed lines show patient FVIII:C activity levels interpolated from the NPP curve. Clotting time is based on activated partial thromboplastin time (aPTT)</q> Triangles: normal pooled plasma (the dashed read-off lines run to this line). Crosses: sample 2, haemophilia A on recombinant factor VIII, 54%, parallel (slope ratio 0.95 on the authors' axis). Diamonds: sample 1, acquired factor VIII inhibitor, 8%, non-parallel (slope ratio 0.57). Note the factor-activity axis here is linear, not the usual log scale.</figcaption></figure>
       <figure><a class="pubfig" href="https://practical-haemostasis.com/" target="_blank" rel="noopener" style="display:flex;flex-direction:column;justify-content:center;gap:6px;min-height:180px;padding:18px;border:2px dashed currentColor;border-radius:10px;opacity:.85;text-decoration:none;color:inherit;font-size:.95em;line-height:1.35"><b>Figure not reproduced on the public site</b><span>Practical Haemostasis log-lin graph: patient plasma line parallel to reference, read at 1.5%</span><span>View it in the original source: Practical Haemostasis &#8599;</span></a><figcaption><b>Practical Haemostasis · 1-Stage APTT factor assays</b><q>Log-Lin graph paper demonstrating a 1-stage APTT Factor VIII assay</q> A parallel patient line, read off the reference at the 1/10 dilution as 1.5%. The simulator's reference line is fitted to this graph's reference points (28, 32, 37 and 42 s).</figcaption></figure>
       <figure><a class="pubfig" href="https://practical-haemostasis.com/" target="_blank" rel="noopener" style="display:flex;flex-direction:column;justify-content:center;gap:6px;min-height:180px;padding:18px;border:2px dashed currentColor;border-radius:10px;opacity:.85;text-decoration:none;color:inherit;font-size:.95em;line-height:1.35"><b>Figure not reproduced on the public site</b><span>Practical Haemostasis log-lin graph of four patient factor VIII assays against the red reference line</span><span>View it in the original source: Practical Haemostasis &#8599;</span></a><figcaption><b>Practical Haemostasis · 1-Stage APTT factor assays</b><q>The graph shows the results of the Factor VIII assays. The reference plasma standard is plotted in red. Note that the lines are parallel.</q></figcaption></figure>
     </div>
-    <p class="note">Reproduced from your Zotero library and the Practical Haemostasis local mirror for personal study and teaching.</p>
+    <p class="note">Published figures are linked to their original sources rather than reproduced on this public page.</p>
   </section>
 
   <section class="refs">
@@ -283,6 +296,7 @@ footer{margin-top:40px;font-size:.84rem;color:var(--muted)}
       explain:"The corrected level climbs with each dilution because the lupus anticoagulant is being diluted out. The clotting time barely changes while the reference line falls, so the lines diverge. These results are invalid; the chromogenic assay (91 IU/dL) gives the true level."},
     nil:{title:"Cannot dilute nothing: below 1 IU/dL",src:"Illustrative values for the pattern Practical Haemostasis describes: very prolonged and identical clotting times at every dilution.",
       pts:[[1,96],[2,96],[4,96]],
+      vtext:"Flat line · true level below 1 IU/dL",vcls:"flat",
       explain:"With no factor VIII to dilute, every tube clots equally slowly and the line is flat. It is non-parallel, but it is a true severe deficiency, not interference. Severity of the prolongation and the bleeding history tell the two apart."}
   };
   // complete points
@@ -325,7 +339,7 @@ footer{margin-top:40px;font-size:.84rem;color:var(--muted)}
       drawLine(X(lo),Y(f.f(lo)),X(hi),Y(f.f(hi)),"patline",900);
       var lp=el("text",{x:X(lo)-4,y:Y(f.f(lo))-10,"text-anchor":"start","class":"lab p"},layer);lp.textContent="Patient";
       var ratio=f.s/SLOPE;var par=Math.abs(ratio-1)<0.25;
-      later(function(){vd.textContent=par?"Parallel · valid":"Not parallel · do not report";vd.className="verdict "+(par?"par":"non");
+      later(function(){vd.textContent=sc.vtext||(par?"Parallel · valid":"Not parallel · do not report");vd.className="verdict "+(sc.vcls||(par?"par":"non"));
         document.getElementById("slope").textContent="Slope ratio, patient ÷ reference: "+ratio.toFixed(2)+" (close to 1 means parallel; the badge uses an illustrative ±25% band, not a published criterion)";
         document.getElementById("p-explain").textContent=sc.explain},600)},t0+sc.pts.length*step+200);
     if(instant)RM=save;
@@ -337,19 +351,51 @@ footer{margin-top:40px;font-size:.84rem;color:var(--muted)}
   run(true);                                   // complete at rest
   if(!RM)setTimeout(function(){run(false)},1400); // then play once
 
-  // tubes: antibodies thin out with dilution; factor VIII gauge rises
-  function tube(id,ab){var s=document.getElementById(id);
-    el("rect",{x:30,y:8,width:60,height:180,rx:28,fill:"none",stroke:"var(--grid-strong)","stroke-width":3},s);
-    el("rect",{x:34,y:60,width:52,height:124,rx:24,fill:"var(--navy-soft)"},s);
-    for(var i=0;i<6;i++)el("rect",{x:40+(i%3)*15,y:120+Math.floor(i/3)*30,width:10,height:4,rx:2,"class":"pl"},s);
-    var seed=7;function r(){seed=(seed*9301+49297)%233280;return seed/233280}
-    for(i=0;i<ab;i++){var g=el("g",{"class":"ab",style:"animation-delay:"+(r()*2).toFixed(2)+"s"},s);var x=40+r()*40,y=70+r()*100;
-      el("path",{d:"M"+x+" "+y+" l5 7 l5 -7 M"+(x+5)+" "+(y+7)+" v7",stroke:"var(--ref)","stroke-width":2.4,fill:"none","stroke-linecap":"round"},g)}
-    for(i=0;i<3;i++)el("circle",{cx:45+i*15,cy:90+r()*60,r:4.5,"class":"fviii",style:"animation-delay:"+(r()*2).toFixed(2)+"s"},s)}
-  tube("t1",12);tube("t2",5);tube("t3",1);
-  var gauges=document.querySelectorAll(".gauge i");
-  function fill(){gauges.forEach(function(g){g.style.width=g.style.getPropertyValue("--w")})}
-  if("IntersectionObserver" in window&&!RM){var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){fill();io.disconnect()}})},{threshold:.4});io.observe(document.getElementById("mech"))}else fill();
+  // mechanism: one tube at a time. Reagent phospholipid fixed (10 sites); antibody and FVIII both halve per dilution
+  var F8POS=[[36,76],[52,81],[68,74],[84,80],[38,127],[56,131],[72,125],[86,132]];
+  var TUBES=[
+    {id:"t1",taken:[0,1,3,4,5,6,8,9],f8:[0,1,2,3,4,5,6,7],w:18,
+     cap:"<b>1/10: the most antibody.</b> Eight antibodies settle on eight of the ten phospholipid sites. Factor VIII is there, but it has little free surface to work on, so the clot is slow and the analyser reads only <b>18 IU/dL</b>."},
+    {id:"t2",taken:[1,3,6,8],f8:[0,2,5,7],w:46,
+     cap:"<b>1/20: half the antibody, same phospholipid.</b> Factor VIII halves too, and the analyser multiplies back by the dilution. Only four sites are blocked and six are free, so the apparent level climbs to <b>46 IU/dL</b>."},
+    {id:"t3",taken:[2,7],f8:[1,6],w:82,
+     cap:"<b>1/40: a quarter of the antibody.</b> Just two sites are blocked and eight are free. The interference has almost gone and the result, <b>82 IU/dL</b>, is close to the chromogenic level of 91."}];
+  var DONE="<b>Same phospholipid, less antibody each time.</b> The apparent factor VIII climbs 18 → 46 → 82 IU/dL towards the true 91. A real deficiency would give the same corrected level in every tube; this rising pattern is what makes the lines on the graph non-parallel.";
+  var css=getComputedStyle(document.documentElement);
+  function col(v){return css.getPropertyValue(v).trim()}
+  var tubes=[].slice.call(document.querySelectorAll(".tube")),cap=document.getElementById("stepcap"),mtimers=[];
+  TUBES.forEach(function(T){var s=document.getElementById(T.id);T.ab=[];T.sites=[];T.f8el=[];
+    el("rect",{x:22,y:34,width:76,height:158,rx:30,fill:"none",stroke:"var(--grid-strong)","stroke-width":3},s);
+    el("rect",{x:26,y:62,width:68,height:126,rx:26,fill:"var(--navy-soft)"},s);
+    for(var i=0;i<10;i++){var sx=30.5+(i%5)*12.5,sy=i<5?112:160,t=T.taken.indexOf(i)>-1;
+      var site=el("rect",{x:sx,y:sy,width:9,height:4,rx:2,"class":"site"+(t?" taken":"")},s);
+      if(t){T.sites.push(site);var g=el("g",{},s),jx=sx+4.5,jy=sy-9;T.ab.push(g);
+        el("path",{d:"M"+(sx+0.5)+" "+(sy-1)+" L"+jx+" "+jy+" L"+(sx+8.5)+" "+(sy-1)+" M"+jx+" "+jy+" V"+(sy-20),stroke:"var(--ref)","stroke-width":2.6,fill:"none","stroke-linecap":"round","stroke-linejoin":"round"},g)}}
+    T.f8.forEach(function(k){T.f8el.push(el("circle",{cx:F8POS[k][0],cy:F8POS[k][1],r:4.6,"class":"f8"},s))});
+    T.gauge=document.querySelector("#"+T.id).parentNode.querySelector(".gauge i")});
+  function stopAll(){mtimers.forEach(clearTimeout);mtimers=[];TUBES.forEach(function(T){[].concat(T.ab,T.sites,T.f8el,[T.gauge]).forEach(function(e){e.getAnimations().forEach(function(a){a.cancel()})})})}
+  function anim(e,k,o){return e.animate(k,Object.assign({fill:"both",easing:"cubic-bezier(.25,.9,.3,1)"},o))}
+  // schedule one tube's animation to start after `at` ms; elements stay hidden until then
+  function playTube(T,at){var gold=col("--gold"),grey=col("--grid-strong");
+    T.ab.forEach(function(g,k){anim(g,[{opacity:0,transform:"translateY(-34px)"},{opacity:1,transform:"none"}],{delay:at+k*130,duration:750})});
+    T.sites.forEach(function(s,k){anim(s,[{fill:gold},{fill:grey}],{delay:at+k*130+650,duration:350})});
+    T.f8el.forEach(function(c,k){anim(c,[{opacity:0,transform:"translateY(-22px)"},{opacity:1,transform:"none"}],{delay:at+1500+k*110,duration:600})});
+    anim(T.gauge,[{width:"0%"},{width:T.w+"%"}],{delay:at+2500,duration:1100});
+    return at+3600}
+  function focus(i){tubes.forEach(function(b,j){b.classList.toggle("dim",i>-1&&j!==i);b.classList.toggle("now",j===i)});
+    cap.innerHTML=i>-1?TUBES[i].cap:DONE}
+  function later2(fn,ms){mtimers.push(setTimeout(fn,ms))}
+  function playAll(){stopAll();var at=200;
+    TUBES.forEach(function(T,i){later2(function(){focus(i)},at);at=playTube(T,at)+2200});
+    later2(function(){focus(-1)},at-1600)}
+  function playOne(i){stopAll();focus(i);playTube(TUBES[i],150)}
+  tubes.forEach(function(b,i){b.addEventListener("click",function(){if(RM){focus(i);return}playOne(i)})});
+  document.getElementById("replay").addEventListener("click",function(){if(RM){focus(-1);return}playAll()});
+  focus(-1);
+  if(!RM&&"IntersectionObserver" in window){
+    TUBES.forEach(function(T){playTube(T,1e9)}); // hold everything hidden until the section is seen
+    var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){playAll();io.disconnect()}})},{threshold:.35});
+    io.observe(document.getElementById("mech"))}
 })();
 </script>
 </body></html>
