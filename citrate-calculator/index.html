@@ -1,0 +1,357 @@
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"></head><body>
+<title>Citrate Adjustment Calculator</title>
+<meta name="description" content="Evidence-based calculators for citrate adjustment in high-haematocrit, under-filled and neonatal coagulation samples (ICSH 2021, CLSI, Dacie and Lewis).">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Public+Sans:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a bench worksheet. One narrow reading column; calculators sit in ruled "sample sheets" with inputs left, results right; stacks to one column on phones. */
+:root{
+  --bg:#F4F6F9; --sheet:#FFFFFF; --ink:#14202B; --muted:#56636F; --rule:#D5DCE4;
+  --cap:#3D86B8;          /* citrate-tube cap blue */
+  --cap-soft:#E3EEF6;
+  --ok:#2C6A4D; --ok-soft:#E3F1EA; --warn:#9A6212; --warn-soft:#F7EEDC; --crit:#A22638; --crit-soft:#F7E3E6;
+  --f-display:"Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --f-body:"Public Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --f-mono:"JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0E141B; --sheet:#151D27; --ink:#E6ECF2; --muted:#9AA8B5; --rule:#2B3846;
+  --cap:#7DB8E0; --cap-soft:#1B2C3B; --ok:#7CCBA3; --ok-soft:#173026; --warn:#E6B565; --warn-soft:#33281A; --crit:#EF8E9A; --crit-soft:#3A1E24; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0E141B; --sheet:#151D27; --ink:#E6ECF2; --muted:#9AA8B5; --rule:#2B3846;
+  --cap:#7DB8E0; --cap-soft:#1B2C3B; --ok:#7CCBA3; --ok-soft:#173026; --warn:#E6B565; --warn-soft:#33281A; --crit:#EF8E9A; --crit-soft:#3A1E24; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:16px/1.6 var(--f-body);margin:0}
+.wrap{max-width:920px;margin:0 auto;padding-inline:16px;padding-block:28px 64px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;line-height:1.15;margin:0}
+h1{font-size:clamp(30px,5.4vw,44px);font-weight:700;letter-spacing:-.01em}
+h2{font-size:clamp(22px,3.4vw,28px);font-weight:700;margin-bottom:10px}
+h3{font-size:18px;font-weight:700;margin-bottom:6px}
+p{margin:0 0 10px;max-width:68ch}
+a{color:var(--cap)}
+.eyebrow{font:600 12px/1 var(--f-body);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.tube{display:inline-block;width:12px;height:22px;border-radius:2px 2px 6px 6px;background:linear-gradient(var(--cap) 0 34%,var(--rule) 34% 100%)}
+.lede{color:var(--muted);font-size:17px;margin-top:10px}
+section{margin-top:40px;display:grid;gap:14px}
+.sheet{background:var(--sheet);border:1px solid var(--rule);border-radius:10px;padding:20px;display:grid;gap:16px}
+.cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:20px}
+@media (max-width:700px){.cols{grid-template-columns:minmax(0,1fr)}}
+.field{display:grid;gap:5px}
+label{font-weight:600;font-size:14px}
+.hint{font-size:13px;color:var(--muted)}
+input,select{font:16px var(--f-mono);color:var(--ink);background:var(--bg);border:1px solid var(--rule);border-radius:6px;padding:9px 10px;width:100%}
+input:focus-visible,select:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid var(--cap);outline-offset:2px}
+.inputs{display:grid;gap:12px;align-content:start}
+.presets{display:flex;flex-wrap:wrap;gap:8px}
+button.chip{font:600 13px var(--f-body);color:var(--ink);background:var(--cap-soft);border:1px solid transparent;border-radius:999px;padding:6px 12px;cursor:pointer}
+button.chip:hover{border-color:var(--cap)}
+.big{font:600 clamp(30px,6vw,42px)/1 var(--f-mono);font-variant-numeric:tabular-nums;color:var(--ink)}
+.big small{font-size:.45em;color:var(--muted);font-weight:400}
+.result{display:grid;gap:10px;align-content:start}
+.kv{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 14px;font-size:15px}
+.kv dt{color:var(--muted)}
+.kv dd{margin:0;font-family:var(--f-mono);font-variant-numeric:tabular-nums;text-align:right}
+.status{border-radius:8px;padding:10px 12px;font-size:14.5px;border-left:4px solid}
+.status.ok{background:var(--ok-soft);border-color:var(--ok)}
+.status.warn{background:var(--warn-soft);border-color:var(--warn)}
+.status.crit{background:var(--crit-soft);border-color:var(--crit)}
+.status b{display:block;margin-bottom:2px}
+.tblwrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--rule);vertical-align:top}
+th{font:600 12px var(--f-body);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+td.num{font-family:var(--f-mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+tr.pick td{background:var(--cap-soft)}
+.formula{font:600 clamp(16px,2.6vw,20px)/1.5 var(--f-mono);background:var(--cap-soft);border-radius:8px;padding:12px 14px;overflow-x:auto;white-space:nowrap}
+.steps{counter-reset:s;display:grid;gap:8px;padding:0;margin:0;list-style:none}
+.steps li{counter-increment:s;display:grid;grid-template-columns:28px minmax(0,1fr);gap:10px}
+.steps li::before{content:counter(s);font:600 13px var(--f-mono);width:24px;height:24px;border-radius:50%;background:var(--cap);color:var(--sheet);display:grid;place-items:center;margin-top:2px}
+.src{font-size:13px;color:var(--muted)}
+.src q{font-style:italic;color:var(--ink)}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:14px}
+.card{background:var(--sheet);border:1px solid var(--rule);border-radius:10px;padding:16px;display:grid;gap:8px;align-content:start}
+.tag{display:inline-block;font:600 11px var(--f-body);letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:999px;background:var(--cap-soft);color:var(--ink);justify-self:start}
+.tag.pref{background:var(--ok-soft)}
+details{background:var(--sheet);border:1px solid var(--rule);border-radius:10px;padding:12px 16px}
+summary{cursor:pointer;font-weight:600}
+ol.refs{padding-left:20px;display:grid;gap:8px;font-size:14px}
+ol.refs li{max-width:80ch}
+.note{font-size:13.5px;color:var(--muted);border-top:1px dashed var(--rule);padding-top:10px}
+@media (prefers-reduced-motion:no-preference){.big{transition:color .2s}}
+</style>
+
+<div class="wrap">
+  <div class="eyebrow"><span class="tube" aria-hidden="true"></span>3.2% trisodium citrate · 1 : 9 · coagulation samples</div>
+  <h1>Citrate Adjustment Calculator</h1>
+  <p class="lede">How much citrate a coagulation tube should hold when the haematocrit is high, the tube is small or the patient is a neonate. Built on ICSH 2021, the CLSI formulas and Dacie and Lewis, with every source quoted below.</p>
+
+  <!-- ============ CALCULATOR 1 ============ -->
+  <section id="calc">
+    <h2>1 · Citrate for a high haematocrit</h2>
+    <div class="sheet">
+      <div class="cols">
+        <div class="inputs">
+          <div class="field">
+            <label for="hct">Haematocrit</label>
+            <input id="hct" inputmode="decimal" value="0.62" aria-describedby="hct-h">
+            <span class="hint" id="hct-h">Enter as a fraction (0.62) or a percentage (62).</span>
+          </div>
+          <div class="field">
+            <label for="vol">Whole blood to be drawn, V (mL)</label>
+            <input id="vol" inputmode="decimal" value="4.5">
+            <div class="presets" role="group" aria-label="Common draw volumes">
+              <button class="chip" data-v="1.0" type="button">1.0</button>
+              <button class="chip" data-v="1.8" type="button">1.8</button>
+              <button class="chip" data-v="2.7" type="button">2.7</button>
+              <button class="chip" data-v="3.5" type="button">3.5</button>
+              <button class="chip" data-v="4.5" type="button">4.5</button>
+            </div>
+            <span class="hint">Use the draw volume printed on your tube, not the tube size.</span>
+          </div>
+          <div class="field">
+            <label for="std">Citrate already in the standard tube (mL)</label>
+            <input id="std" inputmode="decimal" value="0.50">
+            <span class="hint">Defaults to V ÷ 9. Overwrite it if your tube label says otherwise.</span>
+          </div>
+          <div class="presets" role="group" aria-label="Worked examples">
+            <button class="chip" data-ex="station" type="button">Station 1: Hct 0.62, 4.5 mL</button>
+            <button class="chip" data-ex="icsh" type="button">ICSH example: Hct 0.70</button>
+            <button class="chip" data-ex="neo" type="button">Neonate day 1: Hct 0.65, 1.8 mL</button>
+          </div>
+        </div>
+        <div class="result" aria-live="polite">
+          <div class="hint">ICSH Recommendation 10.1 formula</div>
+          <div class="big" id="cOut">0.316 <small>mL citrate</small></div>
+          <dl class="kv">
+            <dt>Remove from the standard tube</dt><dd id="rmOut">0.184 mL</dd>
+            <dt>Citrate : blood ratio</dt><dd id="ratioOut">1 : 14.2</dd>
+            <dt>Plasma in the sample</dt><dd id="plOut">1.71 mL</dd>
+          </dl>
+          <div id="status" class="status warn"><b>Adjust this tube</b>Haematocrit above 0.55.</div>
+        </div>
+      </div>
+      <div>
+        <h3>The three published methods, side by side</h3>
+        <div class="tblwrap"><table>
+          <thead><tr><th>Method</th><th>Citrate (mL)</th><th>Citrate per mL plasma</th><th>Basis</th></tr></thead>
+          <tbody id="cmp"></tbody>
+        </table></div>
+        <p class="note">CLSI GP41 and Dacie and Lewis are stated for the total sample volume, so they are calculated here for blood + standard citrate (for a 4.5 mL draw, 5.0 mL). The Dacie and Lewis column is scaled from its 5 mL table and interpolated between rows; it is blank where the table has no rows. The "citrate per mL plasma" column is arithmetic done on this page, not a published figure.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CALCULATOR 2 ============ -->
+  <section id="fill">
+    <h2>2 · Is this tube acceptable? Fill and haematocrit together</h2>
+    <div class="sheet">
+      <div class="cols">
+        <div class="inputs">
+          <div class="field"><label for="nom">Nominal draw volume (mL)</label><input id="nom" inputmode="decimal" value="4.5"></div>
+          <div class="field"><label for="act">Blood actually in the tube (mL)</label><input id="act" inputmode="decimal" value="3.2"><span class="hint">Estimate from the fill line or by weight.</span></div>
+          <div class="field"><label for="hct2">Haematocrit</label><input id="hct2" inputmode="decimal" value="0.62"></div>
+          <div class="field"><label for="std2">Citrate in the tube (mL)</label><input id="std2" inputmode="decimal" value="0.50"><span class="hint">Standard tube: nominal ÷ 9.</span></div>
+        </div>
+        <div class="result" aria-live="polite">
+          <div class="hint">Fill, against ICSH Recommendation 9.1</div>
+          <div class="big" id="fillOut">71% <small>of nominal</small></div>
+          <div id="fillStatus" class="status crit"><b>Reject</b>Below 80% of nominal volume.</div>
+          <dl class="kv">
+            <dt>Citrate per mL plasma in this tube</dt><dd id="effOut">0.411 mL</dd>
+            <dt>Intended (ICSH formula basis)</dt><dd>0.185 mL</dd>
+            <dt>Citrate excess against intended</dt><dd id="xsOut">2.2 ×</dd>
+          </dl>
+          <p class="note">The excess figure combines under-filling and haematocrit in one number, which is why Station 1 cannot tell the two causes apart once both are corrected. It is calculated here from the ICSH formula's basis, not taken from a study.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FORMULAS ============ -->
+  <section id="formulas">
+    <h2>3 · Every formula, and where it comes from</h2>
+    <div class="cards">
+      <article class="card">
+        <span class="tag pref">ICSH 2021 · preferred</span>
+        <h3>C = 1.85 × 10⁻³ × (100 − Hct) × V</h3>
+        <p>C is the citrate (mL) to add to V mL of <b>whole blood</b>. Hct is entered as a percentage. Also given in CLSI H21-A5.</p>
+        <p class="src">ICSH: <q>This formula has been validated for use with PT, APTT and other coagulation tests, so should be preferred</q> [1]. The validation is Marlar 2006, 28 patients with Hct 0.55–0.72 [2].</p>
+      </article>
+      <article class="card">
+        <span class="tag">CLSI GP41 · Ingram and Hills</span>
+        <h3>c = (100 − Hct) × S ÷ (595 − Hct)</h3>
+        <p>c is the citrate left in the tube for a <b>sample volume</b> S. Quoted by ICSH from CLSI GP41-A6, and first described in Ingram and Hills' 1976 study of citrate concentration and the PT [1, 3].</p>
+        <p class="src">ICSH: the two formulas give a citrate-to-blood ratio that is <q>practically identical</q> [1].</p>
+      </article>
+      <article class="card">
+        <span class="tag">Dacie and Lewis 12e · table</span>
+        <h3>Lookup for a 5 mL total specimen</h3>
+        <div class="tblwrap"><table>
+          <thead><tr><th>Hct</th><th>Citrate (mL)</th></tr></thead>
+          <tbody>
+            <tr><td class="num">0.20</td><td class="num">0.70</td></tr>
+            <tr><td class="num">0.25</td><td class="num">0.65</td></tr>
+            <tr><td class="num">0.30</td><td class="num">0.61</td></tr>
+            <tr><td class="num">0.55</td><td class="num">0.39</td></tr>
+            <tr><td class="num">0.60</td><td class="num">0.35</td></tr>
+            <tr><td class="num">0.65</td><td class="num">0.30</td></tr>
+            <tr><td class="num">0.70</td><td class="num">0.26</td></tr>
+          </tbody>
+        </table></div>
+        <p class="src">Chapter 18, p. 375 [4]. Unlike ICSH, Dacie and Lewis also adjusts for severe anaemia: <q>When the haematocrit is abnormal due to either severe anaemia or polycythaemia, the blood:citrate ratio should be adjusted.</q></p>
+      </article>
+    </div>
+    <details>
+      <summary>How the three compare (worked out on this page)</summary>
+      <p style="margin-top:10px">Checked against each other with the calculator above: for the high-haematocrit rows, the Dacie and Lewis table matches the ICSH formula, applied so that blood plus citrate totals 5 mL, to within 0.01 mL. For the anaemia rows (0.20–0.30) it matches the CLSI GP41 formula instead. For a 4.5 mL draw at Hct 0.55–0.70 the ICSH and CLSI GP41 answers differ by about 0.04 mL, the size of difference ICSH calls practically identical.</p>
+    </details>
+  </section>
+
+  <!-- ============ CONSTANT ============ -->
+  <section id="constant">
+    <h2>4 · Where 1.85 × 10⁻³ comes from</h2>
+    <div class="sheet">
+      <p>The constant is the normal 1 : 9 tube re-expressed per millilitre of <b>plasma</b> instead of per millilitre of blood, for a reference haematocrit of 0.40. This is algebra on the formula, shown so you can check it, not a quotation from a guideline.</p>
+      <ol class="steps">
+        <li><div>A standard tube holds 1 volume of citrate for every 9 volumes of blood, so citrate per mL of blood = 1 ÷ 9 = <b>0.111 mL</b>.</div></li>
+        <li><div>Citrate binds the calcium in the <b>plasma</b>, not in the red cells. At a haematocrit of 40%, 1 mL of blood holds 0.60 mL of plasma.</div></li>
+        <li><div>So citrate per mL of plasma = 0.111 ÷ 0.60 = <b>0.185 mL</b>.</div></li>
+        <li><div>Any patient's plasma volume is V × (100 − Hct) ÷ 100. Keep 0.185 mL citrate per mL of that plasma: C = 0.185 × V × (100 − Hct) ÷ 100 = <b>1.85 × 10⁻³ × (100 − Hct) × V</b>.</div></li>
+        <li><div>Check: Hct 40%, V 4.5 mL gives 1.85 × 10⁻³ × 60 × 4.5 = <b>0.50 mL</b>, the standard tube.</div></li>
+      </ol>
+      <p class="note">The CLSI GP41 formula does the same job anchored to a haematocrit of 0.45 and the total sample volume: Hct 45%, S 5.0 mL gives 55 × 5 ÷ 550 = 0.50 mL. Its 595 is 100 + 495, where 495 is plasma-per-citrate at that reference (0.5 mL citrate in 4.5 × 0.55 = 2.475 mL plasma, i.e. 1 : 4.95, ×100).</p>
+    </div>
+  </section>
+
+  <!-- ============ TUBES & NEONATES ============ -->
+  <section id="neonates">
+    <h2>5 · Different tube sizes and neonatal samples</h2>
+    <div class="sheet">
+      <h3>Tube size changes nothing in the formula</h3>
+      <p>C scales in direct proportion to V, so use the draw volume printed on the tube. A 1.8 mL draw at Hct 0.65 needs 1.85 × 10⁻³ × 35 × 1.8 = 0.117 mL against the standard 0.20 mL, so remove about 0.08 mL. Small tubes forgive less: under-filling has a larger effect in <q>small volume (pediatric) collection tubes</q> [5], and ICSH still rejects any tube below 80% of nominal volume [1].</p>
+      <h3>Neonates often need adjustment in the first week</h3>
+      <div class="tblwrap"><table>
+        <thead><tr><th>Age</th><th>Haematocrit, mean ± 2SD</th><th>Upper limit</th><th>Above 0.55?</th></tr></thead>
+        <tbody>
+          <tr><td>Birth</td><td class="num">0.60 ± 0.15</td><td class="num">0.75</td><td>Often</td></tr>
+          <tr><td>Day 3</td><td class="num">0.56 ± 0.11</td><td class="num">0.67</td><td>Often</td></tr>
+          <tr><td>Day 7</td><td class="num">0.54 ± 0.12</td><td class="num">0.66</td><td>Sometimes</td></tr>
+          <tr><td>Day 14</td><td class="num">0.51 ± 0.2</td><td class="num">0.71</td><td>Sometimes</td></tr>
+          <tr><td>1 month</td><td class="num">0.43 ± 0.10</td><td class="num">0.53</td><td>Rarely</td></tr>
+        </tbody>
+      </table></div>
+      <p class="src">Dacie and Lewis 12e, Table 2-2, p. 12 [4]. Upper limit is mean + 2SD, calculated here. Always use the baby's own measured haematocrit, not the table.</p>
+      <h3>Practical steps</h3>
+      <ol class="steps">
+        <li><div><b>Venous sample where possible.</b> Dacie and Lewis: <q>Venous blood samples should be obtained whenever possible, even from the neonate.</q> [4]</div></li>
+        <li><div><b>Know the haematocrit first</b>, from a recent full blood count. ICSH asks for adjustment above 0.55 [1].</div></li>
+        <li><div><b>Calculate C</b> with the calculator, using the draw volume of the small tube.</div></li>
+        <li><div><b>Remove the excess citrate before the draw.</b> In the validating study a <q>sterile tuberculin syringe was inserted through the stopper and the appropriate volume of anticoagulant removed</q>, and the vacuum was kept so the tube still filled normally [2]. Magnette and colleagues give the same instruction [6].</div></li>
+        <li><div><b>Label the prepared tube for that patient only.</b> ICSH: a specially prepared tube <q>should be labelled and handled in such a manner that will be only used for the intended patient</q> [1].</div></li>
+        <li><div><b>Fill to the mark</b> (at least 90% is the usual target, never below 80%) [1, 5, 7], mix gently, and interpret against <b>age-adjusted reference ranges</b> [7].</div></li>
+      </ol>
+      <p class="note">Practical point, not from a guideline: removals in small tubes are often under 0.1 mL, so use a 1 mL syringe graduated in 0.01 mL and, where your laboratory prepares these tubes, record the volume removed on the tube.</p>
+    </div>
+  </section>
+
+  <!-- ============ EVIDENCE DEBATE ============ -->
+  <section id="evidence">
+    <h2>6 · How strong is the evidence?</h2>
+    <div class="tblwrap"><table>
+      <thead><tr><th>Study</th><th>Design</th><th>Finding</th></tr></thead>
+      <tbody>
+        <tr><td>Marlar 2006 [2]</td><td>28 patients, Hct 0.55–0.72, paired adjusted and unadjusted tubes</td><td>PT and APTT differences <q>exponentially increased with increasing hematocrit values</q>. The basis of the ICSH recommendation.</td></tr>
+        <tr><td>Austin 2013 [8]</td><td>40 samples with citrate added to simulate Hct 0.60</td><td><q>no adjustment of citrate volume appears to be necessary in samples with hematocrits less than or equal to 60%</q></td></tr>
+        <tr><td>Silva 2020 [9]</td><td>181 polycythaemic patients on warfarin, two PT reagents</td><td>Recombinant tissue factor INR needed no adjustment below Hct 0.62; with a rabbit-brain reagent, pairs differed by more than 10% above 0.55. The effect depends on the reagent.</td></tr>
+        <tr><td>Siegel 1998, via ICSH [1]</td><td>Severe anaemia</td><td>ICSH: <q>there is usually no requirement to adjust the citrate-to-blood ratio for samples from subjects with anaemia</q>.</td></tr>
+      </tbody>
+    </table></div>
+    <p><b>Teaching line:</b> ICSH says adjust above 0.55 because the error grows steeply with haematocrit. Between 0.55 and about 0.62 the size of the error depends on the reagent, which is why some laboratories validate a higher local threshold. Dacie and Lewis also adjusts for severe anaemia, but ICSH says this is usually unnecessary.</p>
+  </section>
+
+  <!-- ============ REFERENCES ============ -->
+  <section id="refs">
+    <h2>Sources</h2>
+    <ol class="refs">
+      <li>Kitchen S, Adcock DM, Dauer R, et al. ICSH recommendations for collection of blood samples for coagulation testing. <i>Int J Lab Hematol</i> 2021;43:571–580. PMID <a href="https://pubmed.ncbi.nlm.nih.gov/34097805/">34097805</a>. Sections 9 and 10, Recommendations 9.1 and 10.1.</li>
+      <li>Marlar RA, Potts RM, Marlar AA. Effect on routine and special coagulation testing values of citrate anticoagulant adjustment in patients with high hematocrit values. <i>Am J Clin Pathol</i> 2006;126:400–405. PMID <a href="https://pubmed.ncbi.nlm.nih.gov/16880137/">16880137</a>.</li>
+      <li>Ingram GIC, Hills M. The prothrombin time test: effect of varying citrate concentration. <i>Thromb Haemost</i> 1976;36:230–236. PMID <a href="https://pubmed.ncbi.nlm.nih.gov/1036813/">1036813</a>. Cited here through ICSH [1]; not read in full.</li>
+      <li>Bain BJ, Bates I, Laffan MA, eds. <i>Dacie and Lewis Practical Haematology</i>, 12th ed. Elsevier; 2016. Table 2-2 (p. 12); Chapter 18, Investigation of haemostasis (p. 375).</li>
+      <li>Adcock DM, Favaloro EJ, Lippi G. Critical pre-examination variables in the hemostasis laboratory and their quality indicators. <i>Clin Biochem</i> 2016;49:1315–1320. PMID <a href="https://pubmed.ncbi.nlm.nih.gov/27614216/">27614216</a>.</li>
+      <li>Magnette A, Chatelain M, Chatelain B, Ten Cate H, Mullier F. Pre-analytical issues in the haemostasis laboratory: guidance for the clinical laboratories. <i>Thromb J</i> 2016;14:49. PMID <a href="https://pubmed.ncbi.nlm.nih.gov/27999475/">27999475</a>.</li>
+      <li>Gosselin RC. Preanalytical variables in hemostasis testing. <i>Methods Mol Biol</i> 2023;2663:39–50. PMID <a href="https://pubmed.ncbi.nlm.nih.gov/37204702/">37204702</a>.</li>
+      <li>Austin M, Ferrell C, Reyes M. Do elevated hematocrits prolong the PT/aPTT? <i>Clin Lab Sci</i> 2013;26:89–94. PMID <a href="https://pubmed.ncbi.nlm.nih.gov/23772474/">23772474</a>.</li>
+      <li>Silva VM, Rezende DC, Garcia ES, Cavalheiro C, Strunz CC. Effect of anticoagulant adjustment on prothrombin time test using two different PT reagents in patients with elevated hematocrit. <i>Pract Lab Med</i> 2020;22:e00177. PMID <a href="https://pubmed.ncbi.nlm.nih.gov/33134464/">33134464</a>.</li>
+    </ol>
+    <p class="note">PubMed identifiers retrieved and title-checked live on 11 October 2026. Quotations are verbatim from the full text, except Silva 2020 (abstract). For education; confirm against your laboratory's validated procedure before use.</p>
+  </section>
+</div>
+
+<script>
+(function(){
+  const $=id=>document.getElementById(id);
+  const num=v=>{const x=parseFloat(String(v).replace(',','.'));return isFinite(x)?x:NaN};
+  const hctPct=v=>{const x=num(v);if(!isFinite(x))return NaN;return x<=1?x*100:x};
+  const f3=x=>isFinite(x)?x.toFixed(3):'–';
+  const DL={lo:[[20,.70],[25,.65],[30,.61]],hi:[[55,.39],[60,.35],[65,.30],[70,.26]]};
+  function dl(H){ // Dacie & Lewis, for a 5 mL total specimen
+    for(const seg of [DL.lo,DL.hi]){
+      if(H>=seg[0][0]&&H<=seg[seg.length-1][0]){
+        for(let i=0;i<seg.length-1;i++){const[a,ca]=seg[i],[b,cb]=seg[i+1];if(H>=a&&H<=b)return ca+(cb-ca)*(H-a)/(b-a)}
+        return seg[seg.length-1][1];
+      }}
+    if(H>30&&H<55)return .5; // within normal range the table implies the standard tube
+    return NaN;
+  }
+  let stdTouched=false;
+  function calc1(){
+    const H=hctPct($('hct').value),V=num($('vol').value);
+    if(!stdTouched&&isFinite(V))$('std').value=(V/9).toFixed(2);
+    const S0=num($('std').value);
+    const st=$('status');
+    if(!(H>=10&&H<=85)||!(V>0&&V<=20)){
+      $('cOut').innerHTML='– <small>mL citrate</small>';['rmOut','ratioOut','plOut'].forEach(i=>$(i).textContent='–');
+      st.className='status crit';st.innerHTML='<b>Check the inputs</b>Haematocrit 0.10–0.85 and a draw volume up to 20 mL.';$('cmp').innerHTML='';return;}
+    const C=1.85e-3*(100-H)*V, plasma=V*(100-H)/100;
+    $('cOut').innerHTML=f3(C)+' <small>mL citrate</small>';
+    $('rmOut').textContent=isFinite(S0)?(S0-C>0?f3(S0-C)+' mL':'none (add citrate)'):'–';
+    $('ratioOut').textContent='1 : '+(V/C).toFixed(1);
+    $('plOut').textContent=plasma.toFixed(2)+' mL';
+    if(H>55){st.className='status warn';st.innerHTML='<b>Adjust this tube</b>Haematocrit above 0.55: ICSH Recommendation 10.1 applies.';}
+    else if(H<30){st.className='status ok';st.innerHTML='<b>Standard tube (ICSH)</b>ICSH: usually no adjustment for anaemia. Dacie and Lewis would adjust; see its column below.';}
+    else{st.className='status ok';st.innerHTML='<b>Standard tube</b>Haematocrit 0.55 or below: no adjustment needed. The formula value is shown for teaching only.';}
+    const S=V+(isFinite(S0)?S0:V/9);
+    const gp=(100-H)*S/(595-H), d=dl(H)*S/5;
+    const per=c=>(c/((S-c)*(100-H)/100)).toFixed(3);
+    const perI=(C/plasma).toFixed(3);
+    $('cmp').innerHTML=
+      `<tr class="pick"><td>ICSH 2021 / CLSI H21 (preferred)</td><td class="num">${f3(C)}</td><td class="num">${perI}</td><td>V = ${V} mL of blood</td></tr>`+
+      `<tr><td>CLSI GP41 (Ingram and Hills)</td><td class="num">${f3(gp)}</td><td class="num">${per(gp)}</td><td>S = ${S.toFixed(2)} mL total</td></tr>`+
+      `<tr><td>Dacie and Lewis table</td><td class="num">${isFinite(d)?f3(d):'–'}</td><td class="num">${isFinite(d)?per(d):'–'}</td><td>${isFinite(d)?'scaled from 5 mL':'outside table'}</td></tr>`;
+  }
+  function calc2(){
+    const N=num($('nom').value),A=num($('act').value),H=hctPct($('hct2').value),Ci=num($('std2').value);
+    const fs=$('fillStatus');
+    if(!(N>0&&A>0&&Ci>0&&H>=10&&H<=85)){$('fillOut').innerHTML='– <small>of nominal</small>';fs.className='status crit';fs.innerHTML='<b>Check the inputs</b>All volumes above zero; haematocrit 0.10–0.85.';$('effOut').textContent='–';$('xsOut').textContent='–';return;}
+    const pct=A/N*100;
+    $('fillOut').innerHTML=Math.round(pct)+'% <small>of nominal</small>';
+    if(pct<80){fs.className='status crit';fs.innerHTML='<b>Reject</b>Below 80% of nominal volume (ICSH Recommendation 9.1).';}
+    else if(pct<90){fs.className='status warn';fs.innerHTML='<b>Only if locally validated</b>80–90% may be accepted if local validation shows patient management would not change.';}
+    else if(pct<=110){fs.className='status ok';fs.innerHTML='<b>Fill acceptable</b>90% or more of nominal volume.'+(H>55?' But the haematocrit is above 0.55: the citrate should have been adjusted.':'');}
+    else{fs.className='status warn';fs.innerHTML='<b>Over-filled</b>More blood than the nominal volume: check the entry and the tube.';}
+    const eff=Ci/(A*(100-H)/100);
+    $('effOut').textContent=eff.toFixed(3)+' mL';
+    $('xsOut').textContent=(eff/0.185).toFixed(2)+' ×';
+  }
+  document.querySelectorAll('button[data-v]').forEach(b=>b.addEventListener('click',()=>{$('vol').value=b.dataset.v;stdTouched=false;calc1()}));
+  const EX={station:['0.62','4.5'],icsh:['0.70','4.5'],neo:['0.65','1.8']};
+  document.querySelectorAll('button[data-ex]').forEach(b=>b.addEventListener('click',()=>{const[h,v]=EX[b.dataset.ex];$('hct').value=h;$('vol').value=v;stdTouched=false;calc1()}));
+  $('std').addEventListener('input',()=>{stdTouched=true;calc1()});
+  ['hct','vol'].forEach(i=>$(i).addEventListener('input',calc1));
+  ['nom','act','hct2','std2'].forEach(i=>$(i).addEventListener('input',calc2));
+  calc1();calc2();
+})();
+</script>
+
+</body></html>
